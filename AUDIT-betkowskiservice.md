@@ -1,147 +1,169 @@
 # betkowskiservice.pl – Site Audit & Improvement Suggestions
 
-_Date: 2026-09-29_
+_Date: 2026-09-29 · Platform: Comarch e-Sklep (fixes are made in `panel.comarchesklep.pl`)_
 
-## Scope and method
+## Method
 
-- **Site:** https://www.betkowskiservice.pl/ (Comarch e-Sklep, admin panel at `panel.comarchesklep.pl`)
-- **Limitation:** the site itself could not be loaded from the audit environment (network egress blocked),
-  and the admin panel requires a login. Findings below are based on **how search engines index the site**
-  (page titles, URLs, snippets) and on public third-party listings/reviews. Items marked **[verify]** should
-  be confirmed in a browser or in the panel before acting.
-- Because the shop is a hosted Comarch e-Sklep, almost every fix below is a **panel setting or content
-  edit**, not a code change.
+Live site fetched and rendered in Chromium (desktop 1440 px and iPhone 13 viewport, Polish and English
+browser locale). Checked: home, contact, product list, loyalty program, one category and four product
+pages, `robots.txt`, `sitemap.xml`, JSON-LD structured data, and the sister domains `betkowski.pl` and
+`betkowski.net`. The admin panel itself was **not** accessed; items marked **[panel]** need to be
+checked or changed there.
 
-## Summary – top 5 priorities
+## Top priorities
 
-| # | Issue | Impact | Effort |
-|---|-------|--------|--------|
-| 1 | Page titles are identical/broken across the site | SEO, click-through | Low |
-| 2 | Spare-part product names are too generic ("Filtr", "Rura") | SEO, conversion | Medium |
-| 3 | Brand is split across 3 domains (betkowskiservice.pl, betkowski.pl, betkowski.net) | SEO, trust | Medium |
-| 4 | Service (repair) offer is not a first-class section of the shop | Leads, revenue | Low–Medium |
-| 5 | Public reviews criticise service-department response times | Trust, conversion | Process |
-
----
-
-## 1. SEO – titles and meta data
-
-**Observed in search index:**
-
-| URL | Indexed title | Problem |
-|-----|---------------|---------|
-| `/` | `Bętkowski Service - Sklep Internetowy - Kraków, Dobczyce, Mszana ...` | Truncated; lists towns instead of what you sell |
-| `/kontakt,12` | `Bętkowski Service - Sklep Internetowy` | Same generic title as other pages |
-| `/regulamin,11` | `Bętkowski Service - Sklep Internetowy` | Same generic title |
-| `/produkty,2` | `\| Bętkowski Service - Sklep Internetowy` | **Empty title part** before the separator |
-| `/program-lojalnosciowy,27` | `- Program lojalnościowy` | **Shop name missing** – empty variable in the title template |
-
-**Recommendations (Panel → SEO / page settings, and per-page meta fields):**
-
-- Fix the title template so no page renders with an empty part (`| …` or `- …`). **[verify]** which
-  template variable is empty for the product list and loyalty-program pages.
-- Give every static page its own title and meta description, e.g.:
-  - Home: `Części i serwis kosiarek, traktorków i pił – Husqvarna, John Deere, Stiga | Bętkowski Service`
-  - Contact: `Kontakt i punkty serwisowe – Myślenice, Dobczyce, Skawina, Mszana Dolna | Bętkowski Service`
-- Keep titles ≤ 60 characters where possible so they aren't truncated.
-- Write a unique meta description (~150 characters) for home, category and top product pages.
-
-## 2. Product and category content
-
-**Observed:** spare-part product pages are indexed with bare names such as `Filtr`, `Rura`,
-`Sterownik elektryczny`, `Tuleja R970 506505401`.
-
-A customer searching for a part usually types **brand + model + part number**
-(for example `filtr powietrza Husqvarna 544…`). A title of just "Filtr" won't match that search.
-
-**Recommendations:**
-
-- Product name pattern: `[Part type] [Brand] [OEM part number] – [compatible models]`
-  e.g. `Filtr powietrza Husqvarna 5xxxxxxxx – LC 140, LC 247`.
-- Put the OEM part number in a dedicated attribute and in the name (it's what people search for).
-- Add a "Pasuje do / compatible with" list to part descriptions.
-- Category pages (e.g. `/produkty/nawozenie-uprawy/maszyny-ogrodowe,2,39236`): add 100–200 words of
-  intro text above the product list and a unique meta description.
-- Consider bulk-editing names via the ERP/Comarch import if parts come from a feed; fixing it at the
-  source scales better than manual edits.
-
-## 3. URLs, domains and brand consistency
-
-- URLs contain numeric IDs (`/rura,3,39114,55808`). This is Comarch's standard scheme and fine to keep;
-  just make sure the text slug is descriptive (it follows the product name, so fixing names in §2 helps).
-- **Three web presences** show up for the same business: `betkowskiservice.pl` (shop),
-  `betkowski.pl` and `betkowski.net` (with its own `serwis.html` page). **[verify]** ownership/purpose.
-  - If they are the same company: pick one primary domain, 301-redirect the others (or clearly link
-    between them), and use one name/logo/NAP (name-address-phone) everywhere.
-  - Duplicate service pages on different domains compete with each other in Google.
-- Make sure `http://` → `https://` and non-`www` → `www` redirect to a single version. **[verify]**
-
-## 4. Local presence and the service offer
-
-The business has **5 locations** (Myślenice, Dobczyce, Libertów, Skawina, Mszana Dolna) while the
-correspondence address listed is Raciechowice. That's a strong local-SEO asset that the shop doesn't
-seem to use.
-
-**Recommendations:**
-
-- One **"Punkty / Locations" page** with a card per location: address, opening hours, phone,
-  services available there, embedded map.
-- Claim/verify a **Google Business Profile for each location** with consistent NAP data matching the site.
-- Create a dedicated **"Serwis" page** in the shop (Panel → content pages): what you repair
-  (mowers, tractors, riders, chainsaws, robotic mowers), brands, seasonal pre-season service
-  packages, warranty service info, how to book, typical turnaround.
-- Add a simple **service request form** (model, serial number, problem, preferred location) so leads
-  arrive in a trackable form instead of phone only.
-- Show the "authorised dealer" badges (Husqvarna, John Deere, Stiga, AL-KO…) on the home page.
-
-## 5. Trust and reputation
-
-- Public reviews on Ceneo praise products/sales but **criticise the service department**
-  (slow replies, a warranty/return dispute). Reviews on Morele are 5/5.
-- **Recommendations:**
-  - Reply publicly and politely to negative reviews with a concrete resolution.
-  - Publish clear **service SLAs** on the site (e.g. "response within 2 working days",
-    "repair status update every X days").
-  - Send a status e-mail/SMS at each repair stage (accepted → diagnosed → ready for pickup).
-  - Display trusted-review widgets (Ceneo "Zaufane Opinie" / Google rating) on the site.
-
-## 6. Conversion and UX checklist **[verify in browser]**
-
-These couldn't be checked without loading the site; review them on desktop and mobile:
-
-- [ ] Phone number (532 875 788) clickable (`tel:`) and visible in the header on mobile
-- [ ] Search finds products by **OEM part number**
-- [ ] Filter parts by **brand and machine model**
-- [ ] Delivery cost and time shown on the product page
-- [ ] "Available in store X" / click & collect per location
-- [ ] Loyalty program (`/program-lojalnosciowy,27`) linked from the header/basket, not only the footer
-- [ ] Cookie banner doesn't cover the "add to cart" button on mobile
-
-## 7. Technical checklist **[verify]**
-
-- [ ] PageSpeed Insights (mobile) score – compress large images / banners
-- [ ] `sitemap.xml` submitted in Google Search Console, `robots.txt` not blocking categories
-- [ ] Product structured data (Product, Offer, price, availability) present – test with Rich Results Test
-- [ ] LocalBusiness structured data on contact/locations page
-- [ ] No duplicate content between filter/sort URL variants (canonical tags)
-- [ ] Google Analytics 4 + conversion tracking (purchase, service-form submit, phone click)
+| # | Issue | Where | Impact | Effort |
+|---|-------|-------|--------|--------|
+| 1 | Archived / out-of-stock products are marked **InStock** in structured data | Product pages | Google Shopping/rich results show wrong availability, bad UX | Low **[panel]** |
+| 2 | Every subpage has meta description = `Betkowski Service` | Whole site | SEO, click-through | Low–Medium |
+| 3 | Broken page titles (`\| Bętkowski Service…`, `- Program lojalnościowy`) | Title template | SEO | Low |
+| 4 | **No phone number anywhere** (header, contact page, JSON-LD) and no opening hours | Whole site | Leads, local SEO, trust | Low |
+| 5 | Parts named only `Rura`, `Filtr` with empty description | Product data | SEO, conversion | Medium (ERP/import) |
+| 6 | Service (repairs) offer has no page on the shop – the home "Fachowy serwis" tile has no link | Home | Service leads | Low–Medium |
 
 ---
 
-## Suggested order of work
+## 1. Product pages & structured data
 
-1. **Week 1 (quick wins):** fix title template (§1), write titles/descriptions for home, contact,
-   categories; clickable phone; check redirects.
-2. **Weeks 2–4:** Serwis page + locations page + service form (§4); Google Business Profiles.
-3. **Ongoing:** rename top-selling parts with brand + OEM number (§2), starting with the 100 best
-   sellers; respond to reviews (§5).
-4. **Decision needed:** what to do with `betkowski.pl` / `betkowski.net` (§3).
+**Example – archived product** `/rura,3,39114,55808`
+- Visible page: only "Przeglądasz ofertę archiwalną, wybrany towar jest niedostępny." + the name "Rura".
+  No image, price, description or replacement suggestion is shown.
+- But the page is `index,follow` and its JSON-LD says:
+  `"availability": "https://schema.org/InStock"`, `"price": "209.99"`, `"description": ""`.
+- The hidden HTML also sets delivery to "Wysyłka elektroniczna – link zostanie wysłany e-mailem"
+  for a 1.786 kg physical part, which suggests the product's delivery group is misconfigured. **[panel]**
+
+**Recommendations**
+- Archived products: set **OutOfStock / Discontinued** in schema, or `noindex` them, or 301 them to the
+  replacement part / category. At minimum show "Zamiennik: …" and a link to the category. **[panel]**
+- Check the delivery-method assignment for products showing "Wysyłka elektroniczna". **[panel]**
+
+**Example – good product page** `/tuleja-r970,3,39114,14993`
+- Has a long **"Pasuje do:"** compatibility list (Husqvarna Rider 11/13/850/970, Jonsered FR…). This is
+  exactly what parts buyers need. Make it the standard for all parts.
+- But the title is only `Tuleja R970 506505401` (no brand, no shop name), and the H1 `Tuleja R970` has
+  neither the brand nor the part number.
+- "PROMOCJA" badge for 10,91 zł vs 11,00 zł (−0.8 %). Tiny discounts marked as promotions weaken the
+  badge; consider a minimum threshold (e.g. ≥ 5 %).
+
+**Product naming pattern (for ERP/import):**
+`[Part type] [Brand] [OEM number] – [main compatible models]`
+e.g. `Rura Husqvarna 532174345` → `Rura wydechu Husqvarna 532174345 – [model]`.
+The home page's best-sellers already follow this well
+(`Pasek napędu noży M155-107 TC 142 McCulloch Husqvarna Oryginał`); the old catalogue items don't.
+
+## 2. SEO – titles, descriptions, headings
+
+| Page | Title | Meta description | H1 |
+|------|-------|------------------|----|
+| `/` | `Bętkowski Service - Sklep Internetowy - Kraków, Dobczyce, Mszana Dolna, Skawina , Barwałd \| Strona główna` (≈ 110 chars, truncated in Google) | OK, but says **"ponad 15 lat"** while the page says **"Ponad 20 lat"**; ends in a dangling comma | OK |
+| `/kontakt,12` | `Bętkowski Service - Sklep Internetowy \| Kontakt` | `Betkowski Service` | **missing** |
+| `/produkty,2` | `\| Bętkowski Service - Sklep Internetowy` (**empty first part**) | `Betkowski Service` | **missing** |
+| `/program-lojalnosciowy,27` | `- Program lojalnościowy` (**shop name missing**) | `Betkowski Service` | **missing** |
+| category `maszyny-ogrodowe` | `Maszyny ogrodowe \| Bętkowski Service - Sklep Internetowy` | `Betkowski Service` | OK |
+| products | `Rura \| …`, `Filtr \| …` | `Betkowski Service` | name only |
+
+**Recommendations [panel → SEO / page settings]**
+- Fix the two broken title templates (product list, loyalty program).
+- Shorten the home title to ≤ 60 chars, e.g.
+  `Części i serwis maszyn ogrodowych Husqvarna, John Deere | Bętkowski Service`.
+- Set a **default meta-description template** for products (e.g. `{name} {producer} {code} – oryginalna część, wysyłka 24h. Bętkowski Service`) and categories; write unique ones for home, contact, top categories.
+- Unify "15 lat" vs "20 lat".
+- Add H1 to contact, product-list and loyalty pages.
+- Social sharing: there is **no `og:title` / `og:image`** (only `og:image:width=50`), so links shared on
+  Facebook/WhatsApp have no proper preview. Set an OG image (logo or banner, 1200×630).
+
+## 3. Contact, locations and local SEO
+
+The contact page (`/kontakt,12`) lists 5 addresses and one e-mail, but:
+- **No phone number** anywhere on the shop (no `tel:` link on any page checked). JSON-LD has
+  `"telephone": ""`. The footer shows `351488923` with no label (REGON?), which reads like a phone
+  number.
+- **No opening hours** per location.
+- Location labels don't match the address list: "Sklep, Skawina, Kraków Libertów, Oddział Mszana Dolna,
+  Oddział Skawina" (Skawina twice, Dobczyce and Myślenice not named).
+- A notice says "Nie prowadzimy doboru części… Nie realizujemy zamówień ręcznych…". The policy is fine,
+  but the tone is off-putting. Suggest pairing it with a positive link to **"Jak szukać części?"** and the
+  parts finder.
+
+**Recommendations**
+- Add a clickable phone in the header (mobile) and on the contact page, and fill `telephone` in the
+  company data so JSON-LD picks it up. **[panel → company data]**
+- One card per location: name, address, hours, phone, what's available there (shop / service /
+  machines), map link.
+- Google Business Profile for each location with identical name/address/phone.
+- Label the footer number (`REGON: 351488923`).
+
+## 4. Service (repairs) offer
+
+- Home page tiles "Narzędzia do ogrodu", "Jesienna promocja", "Profesjonalna dostawa" all have a
+  **SPRAWDŹ** button; **"Fachowy serwis" has none**, so there's nowhere to go.
+- The actual service description lives on the old site `betkowski.net/serwis.html`, which has a
+  typo ("atutetem") and no meta description.
+- Recommendations: create a **"Serwis" content page** in the shop (brands serviced, what you repair,
+  pre-season service packages, warranty repairs, locations, turnaround, how to book), link the home tile
+  to it, and add a **service request form** (device, model, serial no., problem, preferred location, photo
+  upload). The contact form already supports attachments, so a "Serwis" department there is a quick
+  first step.
+
+## 5. Domains & brand consistency
+
+| Domain | What it is | Note |
+|--------|-----------|------|
+| `betkowskiservice.pl` | e-shop (parts + tools) | main |
+| `betkowski.pl` | machines, professional robots, golf/sport turf, rentals | links to shop once |
+| `betkowski.net` | older site with a service page and product categories | 30+ links to shop |
+
+- Decide the role of each: e.g. **betkowski.pl** = company & pro machines, **betkowskiservice.pl** =
+  shop + service. Then retire `betkowski.net` with **301 redirects** page-by-page (serwis.html →
+  new shop Serwis page) so its links and rankings transfer.
+- Use one company name/NAP everywhere (the JSON-LD currently says name
+  "Firma Handlowo-Usługowa Tomasz Bętkowski" and legalName "Betkowski Service", which is reversed).
+
+## 6. Technical
+
+| Check | Result |
+|-------|--------|
+| HTTPS, HSTS | ✅ |
+| `betkowskiservice.pl` → `www` | ✅ 301 |
+| Canonical tags | ✅ present |
+| `sitemap.xml` | ✅ sitemap index (5 parts) – but **not referenced in `robots.txt`** → add `Sitemap: https://www.betkowskiservice.pl/sitemap.xml` |
+| `robots.txt` | OK; contains Meta/Facebook crawler rules only |
+| Mobile layout | ✅ no horizontal scroll at 390 px |
+| Page load (lab, from EU cloud) | TTFB 0.25–1.1 s, full load 3.5–5.9 s, ~80–120 requests, ~0.8 MB per page. Home is slowest (TTFB ~1.1 s on mobile) |
+| Images | home on mobile: 19 images served at > 2× displayed size → enable resized/WebP thumbnails **[panel]** |
+| `alt` texts | 156 of 160 `<img>` on home have empty alt (mostly menu icons – fine – but check product/banner images) |
+| Meta keywords | present (ignored by Google, harmless) |
+
+**Run** PageSpeed Insights (mobile) on home, one category and one product for field (CrUX) data.
+
+## 7. UX observations
+
+- **Cookie banner covers ~half of the mobile screen** on first visit, including the page's H1/product.
+  A bottom sheet ≤ 30 % of the height is standard.
+- For non-Polish browsers a **Google Translate bar** appears on top and machine-translates the UI
+  ("Rura" → "Pipe", "Koszyk" → "Basket"). Since you advertise "europejska dostawa", consider proper
+  EN/DE translations of at least the top categories and checkout.
+- Category-menu typos: `DŹWIGNIĘ` → `DŹWIGNIE`, `HYDRUALICZNY` → `HYDRAULICZNY`,
+  `Skawina , Barwałd` (space before comma) in the home title.
+- Parts finder (producer → device → model) is a strong feature. Consider putting it above the fold on
+  mobile as well.
+- "Opinie klientów" section on home shows product names only. If reviews exist, show stars + text;
+  also add Ceneo/Google rating widget (Ceneo reviews are mixed, and the complaints are about service
+  response time).
+
+## Order of work
+
+1. **This week [panel]:** fix title templates, default meta descriptions, phone number + JSON-LD
+   company data, archived-product availability, sitemap line in robots.txt, link the "Fachowy serwis"
+   tile.
+2. **Next 2–4 weeks:** Serwis page + request form, locations with hours, OG image, cookie banner size,
+   typo fixes.
+3. **Ongoing:** product names/descriptions with brand + OEM + "Pasuje do" (start with top 100 sellers);
+   betkowski.net → 301 plan.
 
 ## Sources
 
-- Google/Bing index of `site:betkowskiservice.pl` (page titles and URLs)
-- https://www.betkowskiservice.pl/ , /kontakt,12 , /produkty,2 , /program-lojalnosciowy,27
+- https://www.betkowskiservice.pl/ and subpages listed above (fetched 2026-09-29)
+- https://betkowski.pl/ , https://www.betkowski.net/serwis.html
 - https://www.ceneo.pl/sklepy/betkowskiservice.pl-s44441 (reviews)
-- https://www.morele.net/dostawca/betkowski-service-4852/ (reviews)
-- https://www.betkowski.net/serwis.html , https://betkowski.pl/kontakt/centrala-firmy
-- https://www.facebook.com/BetkowskiService/
