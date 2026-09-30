@@ -36,6 +36,9 @@
         // .../productinformation/v1/products/970488401). Włączać tylko, jeśli
         // Husqvarna to zmieni, np.: /^9[67]\d{7}$/
         maszynaPoKodzie:  null,
+        // Numery maszyn Husqvarna (900…, 901…, 953…, 967…, 970… itd.). Części to zwykle 5…
+        // Takie kody nigdy nie dostają sekcji "część" (karta części dla maszyny = błąd).
+        wzorMaszyny:      /^9\d{8}$/,
         wysokosc:         900,   // px, zanim katalog poda swoją wysokość
         debug:            true
     };
@@ -107,7 +110,11 @@
             };
         }
 
-        if (!kod || !CONFIG.marka.test(karta.nazwa || '')) return { tryb: null, widoki: [] };
+        // Maszyna bez MP_… (pusty wpis albo numer 9xxxxxxxx) -> nic. Nie pokazujemy jej
+        // jako części: /pl/part/<numer maszyny> kończy się błędem katalogu.
+        var jestMaszyna = Object.prototype.hasOwnProperty.call(produkty, kod) ||
+            Object.prototype.hasOwnProperty.call(produkty, bazowy) || CONFIG.wzorMaszyny.test(bazowy);
+        if (!kod || jestMaszyna || !CONFIG.marka.test(karta.nazwa || '')) return { tryb: null, widoki: [] };
 
         var tekst = [karta.nazwa, karta.modele].join(' ');
         var widoki = dopasujModele(tekst, dane.modele).map(function (m) {

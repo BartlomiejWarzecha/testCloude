@@ -82,4 +82,12 @@ assert.notStrictEqual(w.tryb, 'produkt');
 const plik = require(path.join(__dirname, '..', 'xepc-schematy.json'));
 assert.ok(Object.keys(plik.produkty).length >= 1560);
 
+// Maszyna bez MP (LC347VE 970541401): ani zakładki, ani "Karty części" z błędem
+for (const d of [{ produkty: { '970541401': '' } }, {}]) {
+    w = S.zbudujWidoki({ kod: '970541401', nazwa: 'Kosiarka spalinowa Husqvarna LC347VE', modele: '' }, d);
+    assert.deepStrictEqual(w.widoki, [], JSON.stringify(d));
+}
+// Część dalej dostaje kartę części
+assert.deepStrictEqual(S.zbudujWidoki({ kod: '529606802', nazwa: 'Akumulator Husqvarna', modele: '' }, { produkty: { '970541401': '' } }).widoki.map(x => x.etykieta), ['Karta części 529606802']);
+
 console.log('OK');
