@@ -21,6 +21,8 @@
         xepcOrigin:   'https://xepc-prod.husqvarnagroup.com',
         autoWysokosc: true,   // dopasuj wysokość iframe do treści katalogu
         maxIlosc:     99,
+        czasPopupu:   4000,   // ms, ile widać jeden komunikat
+        przerwaPopupu: 400,   // ms przerwy przed następnym
         debug:        true    // true -> każda wiadomość z katalogu w konsoli (F12)
     };
 
@@ -219,12 +221,25 @@
     }
 
     // ── Koszyk (to samo wywołanie co przycisk "Do koszyka" w sklepie) ───────
+    // Komunikaty jeden po drugim, żeby nie nachodziły na siebie
+    // (np. "nie ma w sklepie" i "dodano do koszyka" po jednym kliknięciu).
+    var kolejkaPopupow = [], popupZajety = false;
+
     function popup(tekst, typ) {
+        kolejkaPopupow.push({ tekst: tekst, typ: typ || 'info' });
+        if (!popupZajety) nastepnyPopup();
+    }
+
+    function nastepnyPopup() {
+        var p = kolejkaPopupow.shift();
+        if (!p) { popupZajety = false; return; }
+        popupZajety = true;
         if (global.app && typeof global.app.showTemporaryPopup === 'function') {
-            global.app.showTemporaryPopup(tekst, typ || 'info', null, 4000);
+            global.app.showTemporaryPopup(p.tekst, p.typ, null, CONFIG.czasPopupu);
         } else {
-            global.alert(tekst);
+            global.alert(p.tekst);
         }
+        setTimeout(nastepnyPopup, CONFIG.czasPopupu + CONFIG.przerwaPopupu);
     }
 
     function dodajDoKoszyka(pozycje) {

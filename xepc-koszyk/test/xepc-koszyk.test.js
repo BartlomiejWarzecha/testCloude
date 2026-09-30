@@ -57,6 +57,7 @@ global.$ = {
 require(path.join(__dirname, '..', 'xepc-koszyk.js'));
 const X = global.XepcKoszyk;
 X.config.debug = false;
+X.config.czasPopupu = 5; X.config.przerwaPopupu = 1;   // szybka kolejka w teście
 
 // Numery części
 assert.strictEqual(X.normalizujKod('589 30 08-01'), '589300801');
@@ -122,5 +123,13 @@ const send = (origin, data) => listeners.forEach(fn => fn({ origin, data, source
                                                                { productId: '3411', quantity: '1', attributeId: ['2183', '1893', '2187', '2931'] }]);
     assert.ok(popups.some(([typ, t]) => typ === 'info' && t.includes('999999999')));
     assert.ok(popups.some(([typ, t]) => typ === 'success' && t.includes('589300801')));
+    // Komunikaty idą po kolei, nie naraz
+    const ile = popups.length; const czasy = [];
+    const orig = global.app.showTemporaryPopup;
+    global.app.showTemporaryPopup = (t, typ) => { czasy.push(Date.now()); orig(t, typ); };
+    send(X.config.xepcOrigin, { items: [{ partNumber: '999999999' }, { partNumber: '578443701' }] });
+    await new Promise(r => setTimeout(r, 60));
+    assert.strictEqual(popups.length - ile, 2);
+    assert.ok(czasy[1] - czasy[0] >= X.config.czasPopupu, 'drugi komunikat po pierwszym');
     console.log('OK');
 })().catch(e => { console.error(e); process.exit(1); });

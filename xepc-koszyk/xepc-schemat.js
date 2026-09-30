@@ -43,7 +43,8 @@
         // Numery maszyn Husqvarna (900…, 901…, 953…, 967…, 970… itd.). Części to zwykle 5…
         // Takie kody nigdy nie dostają sekcji "część" (karta części dla maszyny = błąd).
         wzorMaszyny:      /^9\d{8}$/,
-        maxModeliWyszukiwania: 6,   // ile przycisków modeli na stronie wyszukiwania
+        maxModeliWyszukiwania: 6,   // ile przycisków modeli (część / wyszukiwanie)
+        panelWyszukiwania: false,   // panel nad wynikami wyszukiwania/kategorii – WYŁĄCZONY
         wysokosc:         900,   // px, zanim katalog poda swoją wysokość
         debug:            true
     };
@@ -428,7 +429,7 @@
         var karta = czytajKarte();
         if (!karta.kod) {
             var fraza = frazaWyszukiwania();
-            if (fraza && document.querySelector('.product-list-js')) startWyszukiwanie(fraza);
+            if (CONFIG.panelWyszukiwania && fraza && document.querySelector('.product-list-js')) startWyszukiwanie(fraza);
             return;
         }
 
