@@ -29,7 +29,8 @@
         daneUrl:          '/usr/xepc-schematy.json',
         marka:            /husqvarna|hqv|automower/i,           // tryb CZĘŚĆ tylko dla takich nazw
         pokazKarteCzesci: true,
-        nazwaZakladki:    'Części zamienne',
+        nazwaZakladki:      'Części zamienne',   // maszyna
+        nazwaZakladkiCzesc: 'Schemat części',    // część
         // Tryb automatyczny: maszyna po samym Kodzie towaru, bez wpisu w "produkty".
         // WYŁĄCZONY: katalog nie przyjmuje numeru artykułu zamiast MP_…
         // (test 01.10.2026: /pl/product/970488401 -> błąd serwera katalogu
@@ -141,8 +142,9 @@
     }
 
     // ── Wstawienie na kartę ──────────────────────────────────────────────────
-    //  * PRODUKT -> zakładka "Części zamienne" obok Opis / Identyfikatory / Opinie
-    //  * CZĘŚĆ   -> sekcja nad zakładkami
+    // Zakładka obok Opis / Identyfikatory / Opinie:
+    //  * PRODUKT -> "Części zamienne", CZĘŚĆ -> "Schemat części".
+    // Sekcja nad zakładkami tylko awaryjnie, gdy strona nie ma zakładek.
     function wstawStyle() {
         if (document.getElementById('xepc-schemat-css')) return;
         var st = document.createElement('style');
@@ -229,7 +231,8 @@
         var wzorPanelu = document.querySelector('.productDetails-content[data-content]');
         if (!wzorPrzycisku || !wzorPanelu) return wstawSekcje(karta, wynik);
 
-        var ID = 'xepc-czesci', NAZWA = CONFIG.nazwaZakladki;
+        var ID = 'xepc-czesci';
+        var NAZWA = wynik.tryb === 'produkt' ? CONFIG.nazwaZakladki : CONFIG.nazwaZakladkiCzesc;
 
         var przycisk = document.createElement('div');
         przycisk.setAttribute('role', 'button');
@@ -286,8 +289,7 @@
             log(karta, wynik);
             if (!wynik.widoki.length) return;
             wstawStyle();
-            if (wynik.tryb === 'produkt') wstawZakladke(karta, wynik);
-            else wstawSekcje(karta, wynik);
+            wstawZakladke(karta, wynik);   // bez zakładek na stronie -> sekcja (wstawSekcje)
         });
     }
 

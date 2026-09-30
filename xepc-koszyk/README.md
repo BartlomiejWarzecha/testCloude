@@ -95,7 +95,7 @@ dla części i osobno dla maszyn. Tryb wybiera sam, po „Kod towaru”:
 
 | Tryb | Kiedy | Co pokazuje |
 |---|---|---|
-| **Część** | nazwa zawiera Husqvarna/HQV/Automower | schemat każdego modelu z listy `modele`, który pasuje do tytułu lub atrybutu „Modele Husqvarna:” + „Karta części” (`/pl/part/<Kod>`, działa dla każdego kodu, bez listy) |
+| **Część** | nazwa zawiera Husqvarna/HQV/Automower | zakładka **„Schemat części”**: schemat każdego modelu z listy `modele`, który pasuje do tytułu lub atrybutu „Modele Husqvarna:” + „Karta części” (`/pl/part/<Kod>`, działa dla każdego kodu, bez listy) |
 | **Produkt** (maszyna) | „Kod towaru” jest w `produkty` | zakładka **„Części zamienne”** (obok Opis / Identyfikatory / Opinie) ze wszystkimi schematami tej maszyny; katalog ładuje się dopiero po kliknięciu zakładki |
 
 Katalog nie pozwala podlinkować konkretnego zespołu (np. „Chassis lower”).
