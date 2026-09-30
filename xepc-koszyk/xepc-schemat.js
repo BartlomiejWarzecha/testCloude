@@ -83,7 +83,12 @@
     function zbudujWidoki(karta, dane) {
         dane = dane || {};
         var kod = normalizujKod(karta.kod);
-        var maszyna = (dane.produkty || {})[kod];
+        var produkty = dane.produkty || {};
+        var maszyna = produkty[kod];
+        // Odmiany w sklepie ("967674001_OT1", "967244501 10 METROW", "967298201M")
+        // korzystają z wpisu numeru bazowego (pierwsze 9 cyfr).
+        var bazowy = (/^\d{9}/.exec(kod) || [kod])[0];
+        if (maszyna === undefined && bazowy !== kod) maszyna = produkty[bazowy];
         if (typeof maszyna === 'string') maszyna = { mp: maszyna };
 
         // Bez wpisu w "produkty": maszyna rozpoznana po samym Kodzie towaru
@@ -95,7 +100,7 @@
 
         if (maszyna && maszyna.mp) {
             // U maszyn "Kod towaru" to numer artykułu Husqvarny (np. LC253S = 970541501).
-            var article = maszyna.article === null ? null : (maszyna.article || kod);
+            var article = maszyna.article === null ? null : (maszyna.article || bazowy);
             return {
                 tryb: 'produkt',
                 widoki: [{ etykieta: 'Schematy: ' + (maszyna.nazwa || karta.nazwa), url: urlProduktu(maszyna.mp, article) }]

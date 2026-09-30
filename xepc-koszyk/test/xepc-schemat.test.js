@@ -64,4 +64,22 @@ assert.strictEqual(S.zbudujWidoki({ kod: '529606802', nazwa: 'Akumulator Husqvar
 assert.deepStrictEqual(S.zbudujWidoki({ kod: '970000000', nazwa: 'Kosiarka Stiga', modele: '' }, {}).widoki, []);
 S.config.maszynaPoKodzie = null;
 
+// Odmiany kodu w sklepie korzystają z wpisu numeru bazowego
+const danePr = { produkty: { '967244501': 'MP_A', '967674001': 'MP_B' } };
+for (const [kod, mp, art] of [['967244501 10 METROW', 'MP_A', '967244501'], ['967674001_OT1', 'MP_B', '967674001'], ['967244501', 'MP_A', '967244501']]) {
+    w = S.zbudujWidoki({ kod, nazwa: 'Husqvarna', modele: '' }, danePr);
+    assert.strictEqual(w.tryb, 'produkt', kod);
+    assert.ok(w.widoki[0].url.includes('/product/' + mp + '?article=' + art + '&'), kod + ' -> ' + w.widoki[0].url);
+}
+// Wpis dokładny ma pierwszeństwo przed bazowym
+w = S.zbudujWidoki({ kod: '967674001_OT1', nazwa: 'Husqvarna', modele: '' }, { produkty: { '967674001': 'MP_B', '967674001_OT1': 'MP_C' } });
+assert.ok(w.widoki[0].url.includes('/product/MP_C?'));
+
+// Pusty wpis (do uzupełnienia) -> brak zakładki, bez błędu
+w = S.zbudujWidoki({ kod: '970541201', nazwa: 'Kosiarka Husqvarna LC253S', modele: '' }, { produkty: { '970541201': '' } });
+assert.notStrictEqual(w.tryb, 'produkt');
+// Prawdziwy plik danych jest poprawny i zawiera wszystkie maszyny
+const plik = require(path.join(__dirname, '..', 'xepc-schematy.json'));
+assert.ok(Object.keys(plik.produkty).length >= 1560);
+
 console.log('OK');

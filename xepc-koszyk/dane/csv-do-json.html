@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maszyny do xepc-schematy.json</title>
+<style>
+    :root { --tlo: #f6f7f9; --karta: #fff; --tekst: #1d2330; --szary: #5d6677; --ramka: #d9dde4; --akcent: #273a60; --ok: #1d7a3e; --blad: #b3261e; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--tlo); color: var(--tekst); font: 15px/1.5 system-ui, sans-serif; }
+    main { max-width: 760px; margin: 32px auto; padding: 0 16px; }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    p { margin: 0 0 12px; }
+    .szary { color: var(--szary); }
+    .karta { background: var(--karta); border: 1px solid var(--ramka); border-radius: 8px; padding: 16px; margin: 16px 0; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    input[type=file] { width: 100%; }
+    button { background: var(--akcent); color: #fff; border: 0; border-radius: 6px; padding: 10px 16px; font: inherit; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: default; }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    .ok { color: var(--ok); } .blad { color: var(--blad); }
+    code { background: #eef0f4; padding: 1px 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<main>
+    <h1>Maszyny → xepc-schematy.json</h1>
+    <p class="szary">Zamienia wypełniony arkusz <code>maszyny-do-uzupelnienia.csv</code> na plik <code>xepc-schematy.json</code> dla zakładki „Części zamienne”. Wszystko dzieje się w tej przeglądarce, nic nie jest wysyłane.</p>
+
+    <div class="karta">
+        <label for="csv">1. Wypełniony arkusz (CSV)</label>
+        <p class="szary">W kolumnie „Adres w katalogu Husqvarna” wklej adres modelu, np. <code>https://xepc-prod.husqvarnagroup.com/pl/product/MP_125561650?article=967673202</code>, albo samo <code>MP_…</code>. Puste wiersze są pomijane.</p>
+        <input id="csv" type="file" accept=".csv,.txt,text/csv">
+    </div>
+
+    <div class="karta">
+        <label for="json">2. Obecny xepc-schematy.json (opcjonalnie)</label>
+        <p class="szary">Zachowa listę <code>modele</code> i wcześniejsze wpisy maszyn.</p>
+        <input id="json" type="file" accept=".json,application/json">
+    </div>
+
+    <div class="karta">
+        <button id="zrob" disabled>3. Utwórz xepc-schematy.json</button>
+        <div id="wynik"></div>
+    </div>
+</main>
+<script>
+(function () {
+    'use strict';
+    var plikCsv = null, plikJson = null;
+    var $ = function (id) { return document.getElementById(id); };
+
+    // Tak samo jak normalizujKod w xepc-schemat.js
+    function normalizujKod(v) { return String(v || '').toUpperCase().replace(/[\s.\-\/]/g, ''); }
+
+    function czytaj(plik) {
+        return new Promise(function (ok, blad) {
+            var r = new FileReader();
+            r.onload = function () { ok(String(r.result).replace(/^﻿/, '')); };
+            r.onerror = blad;
+            r.readAsText(plik, 'utf-8');
+        });
+    }
+
+    // Prosty parser CSV: separator ; , lub tab, pola w cudzysłowach.
+    function parsujCsv(tekst) {
+        var pierwsza = tekst.split(/\r?\n/)[0] || '';
+        var sep = pierwsza.indexOf(';') >= 0 ? ';' : pierwsza.indexOf('\t') >= 0 ? '\t' : ',';
+        var wiersze = [], pole = '', wiersz = [], wCudz = false;
+        for (var i = 0; i < tekst.length; i++) {
+            var z = tekst[i];
+            if (wCudz) {
+                if (z === '"' && tekst[i + 1] === '"') { pole += '"'; i++; }
+                else if (z === '"') wCudz = false;
+                else pole += z;
+            } else if (z === '"') wCudz = true;
+            else if (z === sep) { wiersz.push(pole); pole = ''; }
+            else if (z === '\n') { wiersz.push(pole); wiersze.push(wiersz); wiersz = []; pole = ''; }
+            else if (z !== '\r') pole += z;
+        }
+        if (pole || wiersz.length) { wiersz.push(pole); wiersze.push(wiersz); }
+        return wiersze;
+    }
+
+    // "…/product/MP_125561650?article=967673202" albo "MP_125561650"
+    function odczytajAdres(a) {
+        a = String(a || '').trim();
+        var mp = /(MP_[A-Za-z0-9]+)/.exec(a);
+        if (!mp) return null;
+        var art = /[?&]article=([A-Za-z0-9]+)/.exec(a);
+        return { mp: mp[1], article: art ? art[1] : null };
+    }
+
+    function odswiez() { $('zrob').disabled = !plikCsv; }
+    $('csv').addEventListener('change', function (e) { plikCsv = e.target.files[0] || null; odswiez(); });
+    $('json').addEventListener('change', function (e) { plikJson = e.target.files[0] || null; });
+
+    $('zrob').addEventListener('click', function () {
+        Promise.all([czytaj(plikCsv), plikJson ? czytaj(plikJson) : Promise.resolve(null)]).then(function (w) {
+            var dane = { modele: [], produkty: {} };
+            if (w[1]) {
+                try { dane = JSON.parse(w[1]); } catch (e) { throw new Error('Plik JSON jest uszkodzony: ' + e.message); }
+                dane.modele = dane.modele || []; dane.produkty = dane.produkty || {};
+            }
+            var wiersze = parsujCsv(w[0]);
+            var dodane = 0, puste = 0, bledy = [], inneArticle = [];
+            wiersze.slice(1).forEach(function (r, i) {
+                var kod = normalizujKod(r[0]);
+                var adres = (r[2] || '').trim();
+                if (!kod) return;
+                if (!adres) { puste++; return; }
+                var x = odczytajAdres(adres);
+                if (!x) { bledy.push('wiersz ' + (i + 2) + ' (' + kod + '): brak MP_… w „' + adres.slice(0, 80) + '”'); return; }
+                // article taki jak Kod towaru -> wystarczy samo MP (skrypt weźmie article z kodu)
+                if (!x.article || x.article === kod) dane.produkty[kod] = x.mp;
+                else { dane.produkty[kod] = { mp: x.mp, article: x.article }; inneArticle.push(kod + ' → article ' + x.article); }
+                dodane++;
+            });
+
+            var json = JSON.stringify(dane, null, 2) + '\n';
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+            a.download = 'xepc-schematy.json';
+            a.textContent = 'Pobierz xepc-schematy.json';
+            a.click();
+
+            var h = '<p class="ok">Gotowe: ' + dodane + ' maszyn z adresem, ' + puste + ' bez adresu (pominięte). ' +
+                'W pliku jest razem ' + Object.keys(dane.produkty).length + ' maszyn i ' + dane.modele.length + ' modeli.</p>';
+            if (bledy.length) h += '<p class="blad">Nie rozpoznano ' + bledy.length + ' adresów:</p><ul class="blad">' +
+                bledy.slice(0, 50).map(function (b) { return '<li>' + b.replace(/</g, '&lt;') + '</li>'; }).join('') + '</ul>';
+            if (inneArticle.length) h += '<p class="szary">Adres ma inny article niż Kod towaru (zapisano oba): ' + inneArticle.length + '</p>';
+            h += '<p class="szary">Jeśli pobieranie nie ruszyło samo: </p>';
+            $('wynik').innerHTML = h;
+            $('wynik').lastChild.appendChild(a);
+        }).catch(function (e) {
+            $('wynik').innerHTML = '<p class="blad">' + String(e.message || e).replace(/</g, '&lt;') + '</p>';
+        });
+    });
+})();
+</script>
+</body>
+</html>
