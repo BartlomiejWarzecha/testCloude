@@ -12,19 +12,35 @@ global.window = global;
 global.addEventListener = (t, fn) => { if (t === 'message') listeners.push(fn); };
 global.document = { querySelectorAll: () => [iframe] };
 // Wyszukiwarka sklepu: kształt odpowiedzi jak na betkowskiservice.pl (30.09.2026).
+const poly = (...ids) => ({ AttributesPolyvalent: ids.map(id => ({ Values: [{ ValueId: id }] })), Attributes: null });
 const produkty = {
-    '589300801': [{ Id: 48426, GIDNumber: 49120, Code: '589300801' }],
-    '578443701': [{ Id: 3411, GIDNumber: 3411, Code: '578443701' }],
+    // koło: warianty "Modele Husqvarna:" -> supplyId z karty produktu
+    '589300801': [{ Id: 48426, GIDNumber: 49120, Code: '589300801', Url: 'kolo-przednie,3,40217,48426',
+                    AttributesList: { Attributes: [{ Id: 558, Values: [{ ValueId: -1 }] }], AttributesPolyvalent: null } }],
+    '578443701': [{ Id: 3411, GIDNumber: 3411, Code: '578443701', AttributesList: poly(2183, 1893, 2187, 2931) }],
+    '529606802': [{ Id: 44993, GIDNumber: 44993, Code: '529606802', AttributesList: poly(2927) }],
+    // kilka wariantów -> nie zgadujemy
+    '500000001': [{ Id: 900, Code: '500000001', Url: 'wiele,3,1,900',
+                    AttributesList: { Attributes: [{ Id: 1, Values: [{ ValueId: -1 }] }] } }],
     // wyszukiwarka zwraca coś podobnego, ale nie ten numer
     '111111111': [{ Id: 777, GIDNumber: 777, Code: '1111111110' }]
 };
+const supplies = ids => '<input name="supplyId" type="hidden" id="supplyId" data-supplies="' +
+    JSON.stringify({ Supplies: [{ ValueId: -1, Supplies: ids.map(id => ({ SupplyId: id, Key: '-1', Supplies: [] })) }] })
+        .replace(/"/g, '&quot;') + '" data-clip="1"/>';
+const strony = { '/kolo-przednie,3,40217,48426': supplies([48426]), '/wiele,3,1,900': supplies([901, 902]) };
 global.location = { pathname: '/husqvarna_katalog,37' };
+// Karta produktu pobierana zwykłym fetch (bez X-Requested-With)
+global.fetch = async url => strony[url]
+    ? { ok: true, text: async () => strony[url] }
+    : { ok: false, status: 404 };
 global.__CSRF = 'csrf-token';
 global.app = { showTemporaryPopup: (t, typ) => popups.push([typ, t]) };
 global.ui = { updateProductsInCart: () => {} };
 global.$ = {
     post: (url, data) => { posted.push(data); return Promise.resolve({ action: { Result: true }, collection: {} }); },
     get: (url, data) => {
+        data = data || {};
         if (data.__action === 'Get/SearchAutocomplete') {
             return Promise.resolve({ action: { Result: true, Redirect302: '//www.betkowskiservice.pl/produkty,2?seaAtc=' + data.search } });
         }
@@ -62,6 +78,13 @@ const send = (origin, data) => listeners.forEach(fn => fn({ origin, data, source
     // ID z e-Sklepu (Id), nie z Optimy (GIDNumber)
     assert.strictEqual(await X.znajdzIdProduktu('589300801'), 48426);
     assert.strictEqual(await X.znajdzIdProduktu('578443701'), 3411);
+    // Atrybuty i warianty jak na karcie produktu
+    assert.deepStrictEqual((await X.znajdzProdukt('529606802')).attributeId, ['2927']);
+    assert.deepStrictEqual((await X.znajdzProdukt('578443701')).attributeId, ['2183', '1893', '2187', '2931']);
+    const kolo = await X.znajdzProdukt('589300801');
+    assert.strictEqual(kolo.supplyId, '48426');
+    assert.deepStrictEqual(kolo.attributeId, []);
+    assert.strictEqual((await X.znajdzProdukt('500000001')).doWyboru, true);
     // Tylko identyczny kod
     assert.strictEqual(await X.znajdzIdProduktu('111111111'), null);
 
@@ -74,14 +97,20 @@ const send = (origin, data) => listeners.forEach(fn => fn({ origin, data, source
     send(X.config.xepcOrigin, { items: [{ partNumber: '589 30 08-01', quantity: 3 }, { partNumber: '578443701' }, { partNumber: '999999999' }] });
     await new Promise(r => setTimeout(r, 20));
     // Wiadomość w formacie katalogu -> Cart/Add
-    send(X.config.xepcOrigin, 'addToCart:589300801$2');
+    send(X.config.xepcOrigin, 'addToCart:529606802$1');
     await new Promise(r => setTimeout(r, 20));
     assert.strictEqual(posted.length, 2);
-    assert.deepStrictEqual(JSON.parse(posted[1].__parameters), [{ productId: '48426', quantity: '2' }]);
+    assert.deepStrictEqual(JSON.parse(posted[1].__parameters), [{ productId: '44993', quantity: '1', attributeId: ['2927'] }]);
+    // Kilka wariantów -> bez Cart/Add, komunikat
+    send(X.config.xepcOrigin, 'addToCart:500000001$1');
+    await new Promise(r => setTimeout(r, 20));
+    assert.strictEqual(posted.length, 2);
+    assert.ok(popups.some(([typ, t]) => typ === 'info' && t.includes('Wybierz wariant')));
 
     assert.strictEqual(posted[0].__action, 'Cart/Add');
     assert.strictEqual(posted[0].__csrf, 'csrf-token');
-    assert.deepStrictEqual(JSON.parse(posted[0].__parameters), [{ productId: '48426', quantity: '3' }, { productId: '3411', quantity: '1' }]);
+    assert.deepStrictEqual(JSON.parse(posted[0].__parameters), [{ productId: '48426', quantity: '3', supplyId: '48426' },
+                                                               { productId: '3411', quantity: '1', attributeId: ['2183', '1893', '2187', '2931'] }]);
     assert.ok(popups.some(([typ, t]) => typ === 'info' && t.includes('999999999')));
     assert.ok(popups.some(([typ, t]) => typ === 'success' && t.includes('589300801')));
     console.log('OK');

@@ -112,7 +112,15 @@
     //   578443701: e-Sklep Id 3411,  GIDNumber 3411
     // Dlatego pytamy wyszukiwarkę sklepu (ta sama co w nagłówku) i bierzemy
     // tylko towar o identycznym Kodzie. Towar niewidoczny w sklepie = brak.
-    var cacheId = new Map();   // kod -> Promise<Id | null>
+    //
+    // Atrybuty: bez nich Cart/Add odpowiada "Przed dodaniem do koszyka wybierz
+    // atrybuty towaru". Wysyłamy to samo co przycisk na karcie produktu:
+    //  * atrybuty wielowartościowe (AttributesPolyvalent, np. KATEGORIA SPRZEDAŻY)
+    //    -> attributeId: domyślna (pierwsza) wartość każdego atrybutu,
+    //       np. bateria 529606802 -> [2927], brzeszczot 578443701 -> [2183,1893,2187,2931]
+    //  * warianty (Attributes, np. "Modele Husqvarna:" przy kole 589300801)
+    //    -> supplyId z data-supplies na karcie produktu, tylko gdy wariant jest jeden.
+    var cacheProduktow = new Map();   // kod -> Promise<produkt | null>
 
     function listaProduktow(odp) {
         var c = odp && odp.collection;
@@ -122,8 +130,47 @@
         return [];
     }
 
-    function znajdzIdProduktu(kod) {
-        if (cacheId.has(kod)) return cacheId.get(kod);
+    function atrybutyWielowartosciowe(pr) {
+        var lista = (pr.AttributesList && pr.AttributesList.AttributesPolyvalent) || [];
+        return lista.map(function (a) {
+            var v = a.Values && a.Values[0];
+            return v && v.ValueId > 0 ? String(v.ValueId) : null;
+        }).filter(Boolean);
+    }
+
+    function maWarianty(pr) {
+        var a = pr.AttributesList && pr.AttributesList.Attributes;
+        return !!(a && a.length);
+    }
+
+    function dekodujHtml(t) {
+        return t.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    }
+
+    // Warianty z karty produktu: <input id="supplyId" data-supplies="{...}">
+    // Zwykły fetch, nie $.get: z nagłówkiem X-Requested-With (dodaje go jQuery)
+    // sklep zwraca pusty JSON zamiast strony.
+    function wariantyZeStrony(url) {
+        return global.fetch(url, { credentials: 'same-origin' }).then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + url);
+            return res.text();
+        }).then(function (html) {
+            var m = /id="supplyId"[^>]*?data-supplies="([^"]*)"/.exec(String(html));
+            if (!m) return [];
+            var ids = [];
+            (function przejdz(w) {
+                (w.Supplies || []).forEach(function (x) {
+                    if (x.SupplyId !== undefined) ids.push(String(x.SupplyId));
+                    else przejdz(x);
+                });
+            })(JSON.parse(dekodujHtml(m[1])));
+            return ids;
+        });
+    }
+
+    function znajdzProdukt(kod) {
+        if (cacheProduktow.has(kod)) return cacheProduktow.get(kod);
         var p = Promise.resolve(global.$.get(global.location.pathname, {
             __action: 'Get/SearchAutocomplete',
             search:   kod
@@ -132,18 +179,40 @@
             if (!url) return null;
             return global.$.get(url, { __collection: 'products.Products' });
         }).then(function (odp) {
-            var trafienie = listaProduktow(odp).filter(function (pr) {
-                return normalizujKod(pr.Code) === kod;
+            var pr = listaProduktow(odp).filter(function (x) {
+                return normalizujKod(x.Code) === kod;
             })[0];
-            log('szukaj', kod, '->', trafienie ? trafienie.Id : 'brak');
-            return trafienie ? Number(trafienie.Id) : null;
+            if (!pr) return null;
+
+            var produkt = {
+                id:          Number(pr.Id),
+                nazwa:       pr.NameNoHtml || kod,
+                url:         pr.Url ? '/' + String(pr.Url).replace(/^\/+/, '') : null,
+                attributeId: atrybutyWielowartosciowe(pr),
+                supplyId:    null,
+                doWyboru:    false   // kilka wariantów -> klient wybiera na karcie produktu
+            };
+            if (!maWarianty(pr) || !produkt.url) return produkt;
+
+            return wariantyZeStrony(produkt.url).then(function (ids) {
+                if (ids.length === 1) produkt.supplyId = ids[0];
+                else produkt.doWyboru = true;
+                return produkt;
+            });
+        }).then(function (produkt) {
+            log('szukaj', kod, '->', produkt || 'brak');
+            return produkt;
         }).catch(function (e) {
             console.warn('[xepc-koszyk] wyszukiwanie ' + kod + ':', (e && (e.statusText || e.message)) || e);
-            cacheId.delete(kod);   // błąd sieci -> spróbuj ponownie przy następnym kliknięciu
+            cacheProduktow.delete(kod);   // błąd sieci -> spróbuj ponownie przy następnym kliknięciu
             return null;
         });
-        cacheId.set(kod, p);
+        cacheProduktow.set(kod, p);
         return p;
+    }
+
+    function znajdzIdProduktu(kod) {
+        return znajdzProdukt(kod).then(function (p) { return p ? p.id : null; });
     }
 
     // ── Koszyk (to samo wywołanie co przycisk "Do koszyka" w sklepie) ───────
@@ -157,7 +226,10 @@
 
     function dodajDoKoszyka(pozycje) {
         var parametry = pozycje.map(function (p) {
-            return { productId: String(p.id), quantity: String(p.ilosc) };
+            var par = { productId: String(p.id), quantity: String(p.ilosc) };
+            if (p.supplyId) par.supplyId = p.supplyId;
+            if (p.attributeId && p.attributeId.length) par.attributeId = p.attributeId;
+            return par;
         });
         return global.$.post(null, {
             __action:     'Cart/Add',
@@ -179,16 +251,25 @@
     }
 
     function obsluzPozycje(pozycje) {
-        Promise.all(pozycje.map(function (p) { return znajdzIdProduktu(p.kod); })).then(function (idki) {
-            var doDodania = [], brak = [];
+        Promise.all(pozycje.map(function (p) { return znajdzProdukt(p.kod); })).then(function (produkty) {
+            var doDodania = [], brak = [], doWyboru = [];
             pozycje.forEach(function (p, i) {
-                if (idki[i]) doDodania.push({ id: idki[i], ilosc: poprawIlosc(p.ilosc), kod: p.kod });
-                else brak.push(p.kod);
+                var pr = produkty[i];
+                if (!pr) brak.push(p.kod);
+                else if (pr.doWyboru) doWyboru.push(pr);
+                else doDodania.push({
+                    id: pr.id, ilosc: poprawIlosc(p.ilosc), kod: p.kod,
+                    attributeId: pr.attributeId, supplyId: pr.supplyId
+                });
             });
-            log('do koszyka:', doDodania, 'brak w sklepie:', brak);
+            log('do koszyka:', doDodania, 'brak w sklepie:', brak, 'do wyboru wariantu:', doWyboru);
 
             if (brak.length) {
                 popup('Części ' + brak.join(', ') + ' nie ma w sklepie. Zapytaj nas o dostępność.', 'info');
+            }
+            if (doWyboru.length) {
+                popup('Wybierz wariant na karcie produktu: ' +
+                    doWyboru.map(function (p) { return p.nazwa; }).join(', '), 'info');
             }
             if (!doDodania.length) return;
 
@@ -233,7 +314,8 @@
         config:           CONFIG,
         normalizujKod:    normalizujKod,
         wyciagnijPozycje: wyciagnijPozycje,
-        znajdzIdProduktu: znajdzIdProduktu
+        znajdzIdProduktu: znajdzIdProduktu,
+        znajdzProdukt:    znajdzProdukt
     };
 
 })(typeof window !== 'undefined' ? window : globalThis);

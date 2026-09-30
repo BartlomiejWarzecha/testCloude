@@ -35,6 +35,24 @@ Część trafia wtedy do koszyka Twojego sklepu.
   Bierze tylko towar o **identycznym** Kodzie. Nie potrzeba eksportu z SQL,
   a nowe towary działają od razu po udostępnieniu w sklepie.
 
+- **Wiadomość z katalogu** to tekst `addToCart:<numer części>$<ilość>`,
+  np. `addToCart:529606802$1` (sprawdzone w konsoli na żywej stronie).
+- **Atrybuty towaru.** Bez nich sklep odpowiada „Przed dodaniem do koszyka
+  wybierz atrybuty towaru”. Skrypt wysyła to samo co przycisk na karcie
+  produktu:
+
+  | Część | Rodzaj atrybutów | Co idzie do `Cart/Add` |
+  |---|---|---|
+  | 529606802 (bateria) | wielowartościowe | `attributeId: ["2927"]` |
+  | 578443701 (brzeszczot) | wielowartościowe | `attributeId: ["2183","1893","2187","2931"]` |
+  | 589300801 (koło) | warianty („Modele Husqvarna:”) | `supplyId: "48426"` |
+
+  Wartości `attributeId` pochodzą z wyników wyszukiwarki. `supplyId` pochodzi
+  z karty produktu (`data-supplies`), pobieranej zwykłym `fetch`, bo z
+  nagłówkiem `X-Requested-With` sklep zwraca pusty JSON. Jeśli towar ma kilka
+  wariantów, skrypt nie zgaduje. Klient dostaje komunikat, żeby wybrał
+  wariant na karcie produktu.
+
 ## Czego nie udało się potwierdzić
 
 Format wiadomości „dodaj do koszyka” z katalogu. Kodu, który ją wysyła, nie ma
