@@ -44,4 +44,10 @@ w = S.zbudujWidoki({ kod: '967 67 32-02', nazwa: 'Robot koszący Husqvarna Autom
 assert.strictEqual(w.tryb, 'produkt');
 assert.deepStrictEqual(etykiety(w), ['Schematy: Automower 430X']);
 
+// PRODUKT: wpis może być samym MP, article = Kod towaru (LC253S = 970541501)
+w = S.zbudujWidoki({ kod: '970541501', nazwa: 'Kosiarka spalinowa Husqvarna LC253S', modele: '' },
+    { produkty: { '970541501': 'MP_TEST' } });
+assert.strictEqual(w.tryb, 'produkt');
+assert.ok(w.widoki[0].url.startsWith('https://xepc-prod.husqvarnagroup.com/pl/product/MP_TEST?article=970541501&domain='));
+
 console.log('OK');

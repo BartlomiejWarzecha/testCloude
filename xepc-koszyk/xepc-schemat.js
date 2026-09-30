@@ -4,7 +4,8 @@
 //
 // Dwa tryby, rozpoznawane po "Kod towaru" na karcie:
 //  * PRODUKT (maszyna) – kod jest w "produkty" w pliku danych
-//    -> wszystkie schematy tej maszyny: /pl/product/<MP>?article=<article>
+//    -> zakładka "Części zamienne" ze wszystkimi schematami tej maszyny:
+//       /pl/product/<MP>?article=<Kod towaru>
 //  * CZĘŚĆ – każdy inny towar Husqvarna
 //    -> schematy modeli z listy "modele", których nazwa pasuje do tytułu
 //       lub atrybutu "Modele Husqvarna:" (np. bateria 430X 440 450X 550)
@@ -27,6 +28,7 @@
         daneUrl:          '/usr/xepc-schematy.json',
         marka:            /husqvarna|hqv|automower/i,           // tryb CZĘŚĆ tylko dla takich nazw
         pokazKarteCzesci: true,
+        nazwaZakladki:    'Części zamienne',
         wysokosc:         900,   // px, zanim katalog poda swoją wysokość
         debug:            true
     };
@@ -75,11 +77,13 @@
         dane = dane || {};
         var kod = normalizujKod(karta.kod);
         var maszyna = (dane.produkty || {})[kod];
+        if (typeof maszyna === 'string') maszyna = { mp: maszyna };
 
         if (maszyna && maszyna.mp) {
+            // U maszyn "Kod towaru" to numer artykułu Husqvarny (np. LC253S = 970541501).
             return {
                 tryb: 'produkt',
-                widoki: [{ etykieta: 'Schematy: ' + (maszyna.nazwa || karta.nazwa), url: urlProduktu(maszyna.mp, maszyna.article) }]
+                widoki: [{ etykieta: 'Schematy: ' + (maszyna.nazwa || karta.nazwa), url: urlProduktu(maszyna.mp, maszyna.article || kod) }]
             };
         }
 
@@ -109,7 +113,9 @@
         };
     }
 
-    // ── Wstawienie sekcji ────────────────────────────────────────────────────
+    // ── Wstawienie na kartę ──────────────────────────────────────────────────
+    //  * PRODUKT -> zakładka "Części zamienne" obok Opis / Identyfikatory / Opinie
+    //  * CZĘŚĆ   -> sekcja nad zakładkami
     function wstawStyle() {
         if (document.getElementById('xepc-schemat-css')) return;
         var st = document.createElement('style');
@@ -117,33 +123,29 @@
         st.textContent =
             '.xepc-schemat{margin:24px 0;padding:0 16px}' +
             '.xepc-schemat h2{font-size:20px;margin:0 0 6px}' +
-            '.xepc-schemat p{margin:0 0 12px;font-size:14px}' +
+            '.xepc-schemat p,.xepc-zakladka p{margin:0 0 12px;font-size:14px}' +
             '.xepc-schemat__tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}' +
             '.xepc-schemat__tab{border:1px solid #ccc;background:#fff;border-radius:4px;padding:6px 12px;cursor:pointer;font:inherit}' +
             '.xepc-schemat__tab[aria-selected="true"]{background:#273a60;border-color:#273a60;color:#fff}' +
-            '.xepc-schemat iframe{width:100%;border:1px solid #ddd;border-radius:4px;display:block}';
+            '.xepc-schemat iframe,.xepc-zakladka iframe{width:100%;border:1px solid #ddd;border-radius:4px;display:block}';
         document.head.appendChild(st);
     }
 
-    function wstawSekcje(karta, wynik) {
-        var sekcja = document.createElement('section');
-        sekcja.className = 'xepc-schemat';
-
-        var h = document.createElement('h2');
-        h.textContent = wynik.tryb === 'produkt' ? 'Schematy części – katalog Husqvarna' : 'Schemat części w katalogu Husqvarna';
-        sekcja.appendChild(h);
+    // Opis + (przyciski modeli) + iframe. Iframe ładuje się dopiero po zaladuj().
+    function zbudujZawartosc(karta, wynik) {
+        var el = document.createElement('div');
 
         var info = document.createElement('p');
         info.textContent = wynik.tryb === 'produkt'
-            ? 'Wybierz zespół w katalogu. „Dodaj do koszyka” przy części dodaje ją do koszyka w naszym sklepie.'
+            ? 'Oficjalny katalog części Husqvarna dla tego modelu. Wybierz zespół, a „Dodaj do koszyka” przy części doda ją do koszyka w naszym sklepie.'
             : 'Wybierz zespół w katalogu i znajdź numer ' + normalizujKod(karta.kod) +
               '. „Dodaj do koszyka” przy części dodaje ją do koszyka w naszym sklepie.';
-        sekcja.appendChild(info);
+        el.appendChild(info);
 
         var ramka = document.createElement('iframe');
         ramka.title = 'Katalog części Husqvarna';
-        ramka.loading = 'lazy';
         ramka.style.height = CONFIG.wysokosc + 'px';
+        var aktualny = wynik.widoki[0].url;
 
         if (wynik.widoki.length > 1) {
             var tabs = document.createElement('div');
@@ -160,19 +162,86 @@
                     Array.prototype.forEach.call(tabs.children, function (x) { x.setAttribute('aria-selected', 'false'); });
                     b.setAttribute('aria-selected', 'true');
                     ramka.style.height = CONFIG.wysokosc + 'px';
+                    aktualny = w.url;
                     ramka.src = w.url;
                 });
                 tabs.appendChild(b);
             });
-            sekcja.appendChild(tabs);
+            el.appendChild(tabs);
         }
+        el.appendChild(ramka);
 
-        ramka.src = wynik.widoki[0].url;
-        sekcja.appendChild(ramka);
+        return {
+            el: el,
+            zaladuj: function () { if (!ramka.getAttribute('src')) ramka.src = aktualny; }
+        };
+    }
+
+    function wstawSekcje(karta, wynik) {
+        var sekcja = document.createElement('section');
+        sekcja.className = 'xepc-schemat';
+        var h = document.createElement('h2');
+        h.textContent = 'Schemat części w katalogu Husqvarna';
+        sekcja.appendChild(h);
+
+        var z = zbudujZawartosc(karta, wynik);
+        sekcja.appendChild(z.el);
 
         var cel = document.querySelector('.productDetails-section--innerCenter');
         if (cel && cel.parentNode) cel.parentNode.insertBefore(sekcja, cel);
         else (document.querySelector('.productDetails-wrapper') || document.body).appendChild(sekcja);
+        z.zaladuj();
+    }
+
+    // Zakładka w stylu sklepu: sklep przełącza zakładki po klasie
+    // .productDetails-detailsButtons--button i data-content (delegacja w layout2.min.js),
+    // więc wystarczy dodać przycisk i panel o tym samym data-content.
+    function wstawZakladke(karta, wynik) {
+        var przyciski = document.querySelector('.productDetails-detailsButtons');
+        var wzorPrzycisku = przyciski && przyciski.querySelector('.productDetails-detailsButtons--button');
+        var wzorPanelu = document.querySelector('.productDetails-content[data-content]');
+        if (!wzorPrzycisku || !wzorPanelu) return wstawSekcje(karta, wynik);
+
+        var ID = 'xepc-czesci', NAZWA = CONFIG.nazwaZakladki;
+
+        var przycisk = document.createElement('div');
+        przycisk.setAttribute('role', 'button');
+        przycisk.setAttribute('tabindex', '0');
+        przycisk.className = 'productDetails-detailsButtons--button';
+        przycisk.setAttribute('data-content', ID);
+        przycisk.appendChild(document.createTextNode(NAZWA));
+        var strzalka = wzorPrzycisku.querySelector('svg');
+        if (strzalka) przycisk.appendChild(strzalka.cloneNode(true));
+
+        var panel = document.createElement('div');
+        panel.className = 'productDetails-content productDetails-content--xepc xepc-zakladka hidden';
+        panel.setAttribute('data-content', ID);
+        var naglowek = wzorPanelu.querySelector('.productDetails-content--header');   // nagłówek + "zamknij" na telefonie
+        if (naglowek) {
+            naglowek = naglowek.cloneNode(true);
+            var tytul = naglowek.querySelector('span');
+            if (tytul) tytul.textContent = NAZWA;
+            panel.appendChild(naglowek);
+        }
+        var tresc = document.createElement('div');
+        tresc.className = 'productDetails-content--text';
+        var z = zbudujZawartosc(karta, wynik);
+        tresc.appendChild(z.el);
+        panel.appendChild(tresc);
+
+        // Po "Opis towaru", żeby zakładka była druga.
+        var po = przyciski.querySelector('[data-content="description"]') || wzorPrzycisku;
+        po.parentNode.insertBefore(przycisk, po.nextSibling);
+        var panele = document.querySelectorAll('.productDetails-content[data-content]');
+        var ostatni = panele[panele.length - 1];
+        ostatni.parentNode.insertBefore(panel, ostatni.nextSibling);
+
+        // Katalog ładujemy dopiero przy pierwszym otwarciu zakładki.
+        przycisk.addEventListener('click', z.zaladuj);
+        przycisk.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); przycisk.click(); }
+        });
+        if (/[#&]czesci\b/.test(global.location.hash)) przycisk.click();
     }
 
     function start() {
@@ -190,7 +259,8 @@
             log(karta, wynik);
             if (!wynik.widoki.length) return;
             wstawStyle();
-            wstawSekcje(karta, wynik);
+            if (wynik.tryb === 'produkt') wstawZakladke(karta, wynik);
+            else wstawSekcje(karta, wynik);
         });
     }
 

@@ -96,7 +96,7 @@ dla części i osobno dla maszyn. Tryb wybiera sam, po „Kod towaru”:
 | Tryb | Kiedy | Co pokazuje |
 |---|---|---|
 | **Część** | nazwa zawiera Husqvarna/HQV/Automower | schemat każdego modelu z listy `modele`, który pasuje do tytułu lub atrybutu „Modele Husqvarna:” + „Karta części” (`/pl/part/<Kod>`, działa dla każdego kodu, bez listy) |
-| **Produkt** (maszyna) | „Kod towaru” jest w `produkty` | wszystkie schematy tej maszyny |
+| **Produkt** (maszyna) | „Kod towaru” jest w `produkty` | zakładka **„Części zamienne”** (obok Opis / Identyfikatory / Opinie) ze wszystkimi schematami tej maszyny; katalog ładuje się dopiero po kliknięciu zakładki |
 
 Katalog nie pozwala podlinkować konkretnego zespołu (np. „Chassis lower”).
 Otwiera model, a klient wybiera zespół w katalogu. „Dodaj do koszyka” w
@@ -122,6 +122,10 @@ ramce działa tak samo jak na stronie katalogu, bo obsługuje go
   i skopiuj z paska adresu `…/product/MP_125561650?article=967673202`.
 - `szukaj` to nazwy, pod którymi model występuje w tytułach i atrybutach
   (np. `"430X"`). `"430X"` nie złapie `"430XH"`.
+- W `produkty` kluczem jest „Kod towaru” maszyny. U maszyn to numer artykułu
+  Husqvarny (np. LC253S = `970541501`), więc wystarczy podać samo `MP_…`:
+  `"970541501": "MP_…"`. `article` jest wtedy brany z „Kod towaru”.
+  Link `…/kosiarka-…,42203#czesci` otwiera kartę od razu na zakładce.
 - `kontekst` to słowo, które musi być w nazwie lub atrybutach. Dzięki niemu
   „Husqvarna 440” przy łańcuchu nie zostanie pomylone z Automower 440.
 
