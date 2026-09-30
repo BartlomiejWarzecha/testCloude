@@ -4,6 +4,7 @@
 //
 // Dwa tryby, rozpoznawane po "Kod towaru" na karcie:
 //  * PRODUKT (maszyna) – kod jest w "produkty" w pliku danych
+//    albo wygląda na numer maszyny Husqvarna (CONFIG.maszynaPoKodzie)
 //    -> zakładka "Części zamienne" ze wszystkimi schematami tej maszyny:
 //       /pl/product/<MP>?article=<Kod towaru>
 //  * CZĘŚĆ – każdy inny towar Husqvarna
@@ -29,6 +30,9 @@
         marka:            /husqvarna|hqv|automower/i,           // tryb CZĘŚĆ tylko dla takich nazw
         pokazKarteCzesci: true,
         nazwaZakladki:    'Części zamienne',
+        // Kody maszyn Husqvarna (96xxxxxxx / 97xxxxxxx) -> zakładka bez wpisu w pliku danych.
+        // null wyłącza tryb automatyczny (zostaje tylko lista "produkty").
+        maszynaPoKodzie:  /^9[67]\d{7}$/,
         wysokosc:         900,   // px, zanim katalog poda swoją wysokość
         debug:            true
     };
@@ -79,11 +83,19 @@
         var maszyna = (dane.produkty || {})[kod];
         if (typeof maszyna === 'string') maszyna = { mp: maszyna };
 
+        // Bez wpisu w "produkty": maszyna rozpoznana po samym Kodzie towaru
+        // (numer artykułu Husqvarny, np. 970541201) -> /pl/product/<Kod towaru>.
+        if (!maszyna && CONFIG.maszynaPoKodzie && CONFIG.maszynaPoKodzie.test(kod) &&
+            CONFIG.marka.test(karta.nazwa || '')) {
+            maszyna = { mp: kod, article: null, nazwa: karta.nazwa };
+        }
+
         if (maszyna && maszyna.mp) {
             // U maszyn "Kod towaru" to numer artykułu Husqvarny (np. LC253S = 970541501).
+            var article = maszyna.article === null ? null : (maszyna.article || kod);
             return {
                 tryb: 'produkt',
-                widoki: [{ etykieta: 'Schematy: ' + (maszyna.nazwa || karta.nazwa), url: urlProduktu(maszyna.mp, maszyna.article || kod) }]
+                widoki: [{ etykieta: 'Schematy: ' + (maszyna.nazwa || karta.nazwa), url: urlProduktu(maszyna.mp, article) }]
             };
         }
 

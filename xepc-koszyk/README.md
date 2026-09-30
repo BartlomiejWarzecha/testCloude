@@ -122,6 +122,12 @@ ramce działa tak samo jak na stronie katalogu, bo obsługuje go
   i skopiuj z paska adresu `…/product/MP_125561650?article=967673202`.
 - `szukaj` to nazwy, pod którymi model występuje w tytułach i atrybutach
   (np. `"430X"`). `"430X"` nie złapie `"430XH"`.
+- **Maszyny bez wpisu (tryb automatyczny).** Jeśli „Kod towaru” wygląda na
+  numer maszyny Husqvarna (`96xxxxxxx` / `97xxxxxxx`, np. LC253S `970541201`)
+  i nazwa zawiera Husqvarna/Automower, zakładka otwiera
+  `/pl/product/<Kod towaru>`, bez `MP_…`. Działa to tylko wtedy, gdy katalog
+  przyjmuje sam numer artykułu. Sprawdź to w przeglądarce, a jeśli nie działa,
+  ustaw `maszynaPoKodzie: null` i dopisuj maszyny do `produkty`.
 - W `produkty` kluczem jest „Kod towaru” maszyny. U maszyn to numer artykułu
   Husqvarny (np. LC253S = `970541501`), więc wystarczy podać samo `MP_…`:
   `"970541501": "MP_…"`. `article` jest wtedy brany z „Kod towaru”.
