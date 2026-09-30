@@ -29,11 +29,11 @@ w = S.zbudujWidoki({ kod: '589300801', nazwa: 'Koło przednie Husqvarna Automowe
     modele: 'Modele Husqvarna: Automower 115H, 305E, 310 Mark II 310E, 315 Mark II, 405X, 415X, Aspire R4 320, 320, 330X, 430X, 430XH, 440' }, dane);
 assert.deepStrictEqual(etykiety(w), ['Schemat: Automower 430X', 'Schemat: Automower 440', 'Karta części 589300801']);
 w = S.zbudujWidoki({ kod: '1', nazwa: 'Husqvarna Automower 430XH pokrywa', modele: '' }, dane);
-assert.deepStrictEqual(etykiety(w), ['Karta części 1']);
+assert.deepStrictEqual(etykiety(w), []);   // brak schematu -> brak zakładki (nie sama karta części)
 
 // Piła "Husqvarna 440" to nie Automower 440 (brak kontekstu "automower")
 w = S.zbudujWidoki({ kod: '503000000', nazwa: 'Łańcuch Husqvarna 440 450', modele: '' }, dane);
-assert.deepStrictEqual(etykiety(w), ['Karta części 503000000']);
+assert.deepStrictEqual(etykiety(w), []);
 
 // Inna marka -> nic
 w = S.zbudujWidoki({ kod: '737-05066', nazwa: 'Filtr powietrza CubCadet MTD', modele: '' }, dane);
@@ -59,7 +59,7 @@ w = S.zbudujWidoki({ kod: '970541201', nazwa: 'Kosiarka spalinowa Husqvarna LC25
 assert.strictEqual(w.tryb, 'produkt');
 assert.strictEqual(w.widoki[0].url, 'https://xepc-prod.husqvarnagroup.com/pl/product/970541201?domain=https%3A%2F%2Fwww.betkowskiservice.pl%2F');
 // część (5xxxxxxxx) nie jest maszyną
-assert.strictEqual(S.zbudujWidoki({ kod: '529606802', nazwa: 'Akumulator Husqvarna', modele: '' }, {}).tryb, 'czesc');
+assert.notStrictEqual(S.zbudujWidoki({ kod: '529606802', nazwa: 'Akumulator Husqvarna', modele: '' }, {}).tryb, 'produkt');
 // inna marka z kodem 97... -> nic
 assert.deepStrictEqual(S.zbudujWidoki({ kod: '970000000', nazwa: 'Kosiarka Stiga', modele: '' }, {}).widoki, []);
 S.config.maszynaPoKodzie = null;
@@ -88,6 +88,45 @@ for (const d of [{ produkty: { '970541401': '' } }, {}]) {
     assert.deepStrictEqual(w.widoki, [], JSON.stringify(d));
 }
 // Część dalej dostaje kartę części
-assert.deepStrictEqual(S.zbudujWidoki({ kod: '529606802', nazwa: 'Akumulator Husqvarna', modele: '' }, { produkty: { '970541401': '' } }).widoki.map(x => x.etykieta), ['Karta części 529606802']);
+assert.deepStrictEqual(S.zbudujWidoki({ kod: '529606802', nazwa: 'Akumulator Husqvarna 430X Automower', modele: '' }, { modele: dane.modele, produkty: { '970541401': '' } }).widoki.map(x => x.etykieta), ['Schemat: Automower 430X', 'Karta części 529606802']);
+
+// WYSZUKIWANIE
+const et = w => w.widoki.map(x => x.etykieta);
+const daneW = { nazwy: { LC140P: { nazwa: 'LC 140P', mp: 'MP_125562330', article: '970488101' },
+                         LC353VE: { nazwa: 'LC 353VE', mp: 'MP_125562490', article: '970541701' } },
+                produkty: { '970488101': 'MP_125562330', '970488201': 'MP_125562331' } };
+// "LC 140P": model z frazy + maszyny z wyników (bez duplikatu), na końcu katalog
+w = S.dopasujWyszukiwanie('LC 140P', [
+    { Code: '970488101', NameNoHtml: 'Kosiarka spalinowa Husqvarna LC140P' },
+    { Code: '970488201', NameNoHtml: 'Kosiarka spalinowa Husqvarna LC140SP' },
+    { Code: '599349391', NameNoHtml: 'Przewód linka LC 140P Husqvarna' }], daneW, '/producent=husqvarna/produkty,2');
+assert.deepStrictEqual(et(w), ['Schemat: LC 140P', 'Schemat: LC140SP', 'Katalog części Husqvarna']);
+assert.ok(w.widoki[1].url.includes('/product/MP_125562331?article=970488201&'));
+// "kosiarka husqvarna lc353ve" -> model ze słownika, nawet bez maszyny w wynikach
+assert.deepStrictEqual(et(S.dopasujWyszukiwanie('kosiarka husqvarna lc353ve', [], daneW, '/produkty,2')), ['Schemat: LC 353VE', 'Katalog części Husqvarna']);
+// "LC140": nie ma modelu, ale wyniki to części Husqvarna -> sam katalog
+assert.deepStrictEqual(et(S.dopasujWyszukiwanie('LC140', [{ Code: '587585401', NameNoHtml: 'Koło LC140 Husqvarna' }], daneW, '/producent=husqvarna/produkty,2')), ['Katalog części Husqvarna']);
+// "husqvarna" -> katalog
+assert.deepStrictEqual(et(S.dopasujWyszukiwanie('husqvarna', [], daneW, '/produkty,2')), ['Katalog części Husqvarna']);
+// fraza bez związku z Husqvarną -> nic
+assert.deepStrictEqual(S.dopasujWyszukiwanie('rękawice', [{ Code: 'X1', NameNoHtml: 'Rękawice robocze Stihl' }], daneW, '/produkty,2').widoki, []);
+// prawdziwy plik danych ma słownik nazw
+assert.strictEqual(plik.nazwy.LC140P.mp, 'MP_125562330');
+
+// CZĘŚĆ + słownik "nazwy": model z tytułu części
+const slownik = { nazwy: { LC353VE: { nazwa: 'LC 353VE', mp: 'MP_125562490', article: '970541701' },
+                           '550': { nazwa: 'Automower 550', mp: 'MP_550', article: '1' },
+                           '543XP': { nazwa: '543 XP', mp: 'MP_543', article: '2' } } };
+w = S.zbudujWidoki({ kod: '589324605', nazwa: 'Pasek husqvarna LC353,LC 353V,LC353VE', modele: '' }, slownik);
+assert.deepStrictEqual(etykiety(w), ['Schemat: LC 353VE', 'Karta części 589324605']);
+// same liczby ze słownika nie łapią tytułów części ("550XP" to nie Automower 550)
+w = S.zbudujWidoki({ kod: '537000000', nazwa: 'Tłumik Husqvarna 550 XP 543XP', modele: '' }, slownik);
+assert.deepStrictEqual(etykiety(w), ['Schemat: 543 XP', 'Karta części 537000000']);
+// filtr 501879706 (pilarka 254, brak w słowniku) -> brak zakładki
+assert.deepStrictEqual(S.zbudujWidoki({ kod: '501879706', nazwa: 'Filtr powietrza 254 Husqvarna 501879706 ORYGINAŁ', modele: 'KATEGORIA SPRZEDAŻY A' }, plik).widoki, []);
+// opcjonalnie dawne zachowanie
+S.config.kartaCzesciBezSchematu = true;
+assert.deepStrictEqual(etykiety(S.zbudujWidoki({ kod: '501879706', nazwa: 'Filtr Husqvarna', modele: '' }, {})), ['Karta części 501879706']);
+S.config.kartaCzesciBezSchematu = false;
 
 console.log('OK');

@@ -1571,5 +1571,1959 @@
     "970862201": "",
     "997103110": "",
     "997103610": ""
+  },
+  "nazwy": {
+    "110ILFLXI": {
+      "nazwa": "110iL FLXi",
+      "mp": "MP_125562459",
+      "article": "970531201"
+    },
+    "120IBV": {
+      "nazwa": "120iBV",
+      "mp": "MP_138101828",
+      "article": "970649802"
+    },
+    "120IBVZAKUMULATOREMIADOWARK": {
+      "nazwa": "120iBV z akumulatorem i ładowarką",
+      "mp": "MP_131136695",
+      "article": "970649804"
+    },
+    "120ITK4H": {
+      "nazwa": "120iTK4-H",
+      "mp": "MP_125562392",
+      "article": "970515902"
+    },
+    "120ITK4HZAKUMULATOREMIADOWARK": {
+      "nazwa": "120iTK4-H z akumulatorem i ładowarką",
+      "mp": "MP_125680720",
+      "article": "970515905"
+    },
+    "120ITK4P": {
+      "nazwa": "120iTK4-P",
+      "mp": "MP_125562393",
+      "article": "970515901"
+    },
+    "120ITK4PH": {
+      "nazwa": "120iTK4-PH",
+      "mp": "MP_125562401",
+      "article": "970515903"
+    },
+    "120ITK4PHZAKUMULATOREMIADOWARK": {
+      "nazwa": "120iTK4-PH z akumulatorem i ładowarką",
+      "mp": "MP_125920482",
+      "article": "970515906"
+    },
+    "120MARKII": {
+      "nazwa": "120 Mark II",
+      "mp": "MP_125561863",
+      "article": "967861903"
+    },
+    "122C": {
+      "nazwa": "122C",
+      "mp": "MP_125560716",
+      "article": "966779701"
+    },
+    "122HD60": {
+      "nazwa": "122HD60",
+      "mp": "MP_125560896",
+      "article": "966532401"
+    },
+    "122IB": {
+      "nazwa": "122iB",
+      "mp": "MP_173061313",
+      "article": "970827301"
+    },
+    "122RZGOWICYKOW": {
+      "nazwa": "122R z głowicą żyłkową",
+      "mp": "MP_143226901",
+      "article": "970732401"
+    },
+    "125B": {
+      "nazwa": "125B",
+      "mp": "MP_201229402",
+      "article": "952715654"
+    },
+    "125BVX": {
+      "nazwa": "125BVx",
+      "mp": "MP_163583655",
+      "article": "952715674"
+    },
+    "129R": {
+      "nazwa": "129R",
+      "mp": "MP_125560714",
+      "article": "967193305"
+    },
+    "130": {
+      "nazwa": "130",
+      "mp": "MP_125561256",
+      "article": "967108401"
+    },
+    "135MARKII": {
+      "nazwa": "135 Mark II",
+      "mp": "MP_125561862",
+      "article": "967861814"
+    },
+    "135R": {
+      "nazwa": "135R",
+      "mp": "MP_125560730",
+      "article": "966604802"
+    },
+    "214C": {
+      "nazwa": "214C",
+      "mp": "MP_125562407",
+      "article": "970519401"
+    },
+    "215I": {
+      "nazwa": "215i",
+      "mp": "MP_174246213",
+      "article": "970792002"
+    },
+    "215IHD45": {
+      "nazwa": "215iHD45",
+      "mp": "MP_125562480",
+      "article": "970536501"
+    },
+    "215IHD45ZAKUMULATOREMIADOWARK": {
+      "nazwa": "215iHD45 z akumulatorem i ładowarką",
+      "mp": "MP_125562846",
+      "article": "970536502"
+    },
+    "215IL": {
+      "nazwa": "215iL",
+      "mp": "MP_125562478",
+      "article": "970536001"
+    },
+    "220IR": {
+      "nazwa": "220iR",
+      "mp": "MP_162704525",
+      "article": "970754401"
+    },
+    "225I": {
+      "nazwa": "225i",
+      "mp": "MP_131085461",
+      "article": "970547503"
+    },
+    "230I": {
+      "nazwa": "230i",
+      "mp": "MP_176610092",
+      "article": "970838308"
+    },
+    "230IB": {
+      "nazwa": "230iB",
+      "mp": "MP_143227663",
+      "article": "970744301"
+    },
+    "230IBZAKUMULATOREMIADOWARK": {
+      "nazwa": "230iB z akumulatorem i ładowarką",
+      "mp": "MP_143227602",
+      "article": "970744402"
+    },
+    "230IZAKUMULATOREMIADOWARK": {
+      "nazwa": "230i z akumulatorem i ładowarką",
+      "mp": "MP_176610170",
+      "article": "970838310"
+    },
+    "240I": {
+      "nazwa": "240i",
+      "mp": "MP_131043283",
+      "article": "970601106"
+    },
+    "242I": {
+      "nazwa": "242i",
+      "mp": "MP_176607414",
+      "article": "970838406"
+    },
+    "242IZAKUMULATOREMIADOWARK": {
+      "nazwa": "242i z akumulatorem i ładowarką",
+      "mp": "MP_176607412",
+      "article": "970838410"
+    },
+    "305": {
+      "nazwa": "AUTOMOWER 305",
+      "mp": "MP_125562084",
+      "article": "967974011"
+    },
+    "305ENERA": {
+      "nazwa": "Automower 305E NERA",
+      "mp": "MP_166999491",
+      "article": "970819611"
+    },
+    "308V": {
+      "nazwa": "Automower 308V",
+      "mp": "MP_175948704",
+      "article": "970831011"
+    },
+    "310ENERA": {
+      "nazwa": "Automower 310E NERA",
+      "mp": "MP_175798925",
+      "article": "970819711"
+    },
+    "310MARKII": {
+      "nazwa": "AUTOMOWER 310 Mark II",
+      "mp": "MP_125562447",
+      "article": "970526711"
+    },
+    "312V": {
+      "nazwa": "Automower 312V",
+      "mp": "MP_175951439",
+      "article": "970831111"
+    },
+    "315MARKII": {
+      "nazwa": "AUTOMOWER 315 Mark II",
+      "mp": "MP_125562448",
+      "article": "970526811"
+    },
+    "322IHD60": {
+      "nazwa": "322iHD60",
+      "mp": "MP_131043983",
+      "article": "970466401"
+    },
+    "325IB": {
+      "nazwa": "325iB",
+      "mp": "MP_125562189",
+      "article": "967991001"
+    },
+    "325IL": {
+      "nazwa": "325iL",
+      "mp": "MP_131135132",
+      "article": "970566801"
+    },
+    "325IR": {
+      "nazwa": "325iR​",
+      "mp": "MP_131135133",
+      "article": "970566901"
+    },
+    "333RMARKII": {
+      "nazwa": "333R Mark II",
+      "mp": "MP_125562061",
+      "article": "967967902"
+    },
+    "335IBBEZAKUMULATORAIADOWARKI": {
+      "nazwa": "335iB bez akumulatora i ładowarki",
+      "mp": "MP_173449268",
+      "article": "970827401"
+    },
+    "336FR": {
+      "nazwa": "336FR",
+      "mp": "MP_125560729",
+      "article": "966604703"
+    },
+    "340IBT": {
+      "nazwa": "340iBT",
+      "mp": "MP_125561734",
+      "article": "970762101"
+    },
+    "345BT": {
+      "nazwa": "345BT",
+      "mp": "MP_126003357",
+      "article": "970466903"
+    },
+    "360BT": {
+      "nazwa": "360BT",
+      "mp": "MP_125561487",
+      "article": "967144304"
+    },
+    "365XTORQ": {
+      "nazwa": "365 X-Torq",
+      "mp": "MP_125560593",
+      "article": "966428318"
+    },
+    "372XPXTORQ": {
+      "nazwa": "372 XP X-TORQ",
+      "mp": "MP_125560595",
+      "article": "965968118"
+    },
+    "405VENERA": {
+      "nazwa": "Automower 405VE NERA",
+      "mp": "MP_175801721",
+      "article": "970819911"
+    },
+    "405XENERA": {
+      "nazwa": "Automower 405XE NERA",
+      "mp": "MP_159329063",
+      "article": "970654311"
+    },
+    "405XENERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 405XE NERA z technologią bezprzewodową",
+      "mp": "MP_159352166",
+      "article": "970774155"
+    },
+    "410VENERA": {
+      "nazwa": "Automower 410VE NERA",
+      "mp": "MP_175803538",
+      "article": "970820011"
+    },
+    "410XENERA": {
+      "nazwa": "Automower 410XE NERA",
+      "mp": "MP_143361174",
+      "article": "970654411"
+    },
+    "410XENERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 410XE NERA z technologią bezprzewodową",
+      "mp": "MP_145874484",
+      "article": "970654455"
+    },
+    "415X": {
+      "nazwa": "AUTOMOWER 415X",
+      "mp": "MP_125562280",
+      "article": "970471711"
+    },
+    "420EL": {
+      "nazwa": "420EL",
+      "mp": "MP_125560514",
+      "article": "967205716"
+    },
+    "430VNERA": {
+      "nazwa": "Automower 430V NERA",
+      "mp": "MP_175945538",
+      "article": "970820111"
+    },
+    "430XNERA": {
+      "nazwa": "Automower 430X NERA",
+      "mp": "MP_131087317",
+      "article": "970535211"
+    },
+    "430XNERAZZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 430X NERA z z technologią bezprzewodową",
+      "mp": "MP_131087424",
+      "article": "970535255"
+    },
+    "435I": {
+      "nazwa": "435i",
+      "mp": "MP_143273164",
+      "article": "970718014"
+    },
+    "435II": {
+      "nazwa": "435 II",
+      "mp": "MP_125560539",
+      "article": "970559735"
+    },
+    "435XAWDNERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 435X AWD NERA z technologią bezprzewodową",
+      "mp": "MP_159329579",
+      "article": "970745211"
+    },
+    "440I": {
+      "nazwa": "440i",
+      "mp": "MP_174096648",
+      "article": "970838615"
+    },
+    "440II": {
+      "nazwa": "440 II",
+      "mp": "MP_125560545",
+      "article": "970560035"
+    },
+    "445II": {
+      "nazwa": "445 II",
+      "mp": "MP_125560554",
+      "article": "970558735"
+    },
+    "445S": {
+      "nazwa": "445S",
+      "mp": "MP_163555997",
+      "article": "970702015"
+    },
+    "450II": {
+      "nazwa": "450 II",
+      "mp": "MP_125560561",
+      "article": "970559335"
+    },
+    "450S": {
+      "nazwa": "450S",
+      "mp": "MP_163558127",
+      "article": "970702715"
+    },
+    "450VNERA": {
+      "nazwa": "Automower 450V NERA",
+      "mp": "MP_175946727",
+      "article": "970820211"
+    },
+    "450X": {
+      "nazwa": "450X",
+      "mp": "MP_163584878",
+      "article": "970702915"
+    },
+    "450XNERA": {
+      "nazwa": "Automower 450X NERA",
+      "mp": "MP_131087471",
+      "article": "970535311"
+    },
+    "450XNERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 450X NERA z technologią bezprzewodową",
+      "mp": "MP_131087601",
+      "article": "970535355"
+    },
+    "520": {
+      "nazwa": "Automower 520",
+      "mp": "MP_132183071",
+      "article": "970656311"
+    },
+    "520EPOS": {
+      "nazwa": "Automower 520 EPOS",
+      "mp": "MP_161478653",
+      "article": "970800811"
+    },
+    "520IHE3": {
+      "nazwa": "520iHE3",
+      "mp": "MP_125561894",
+      "article": "967915813"
+    },
+    "520IHT4": {
+      "nazwa": "520iHT4",
+      "mp": "MP_125562078",
+      "article": "967971203"
+    },
+    "520ILX": {
+      "nazwa": "520iLX",
+      "mp": "MP_125561891",
+      "article": "967916113"
+    },
+    "520IRX": {
+      "nazwa": "520iRX",
+      "mp": "MP_125561892",
+      "article": "967916203"
+    },
+    "522HD60X": {
+      "nazwa": "522HD60X",
+      "mp": "MP_125561617",
+      "article": "967658701"
+    },
+    "522HDR75X": {
+      "nazwa": "522HDR75X",
+      "mp": "MP_125561614",
+      "article": "967658401"
+    },
+    "522HS75X": {
+      "nazwa": "522HS75X",
+      "mp": "MP_125561621",
+      "article": "967659201"
+    },
+    "522IHD60BEZAKUMULATORAIADOWARKI": {
+      "nazwa": "522iHD60 bez akumulatora i ładowarki",
+      "mp": "MP_130995075",
+      "article": "970466001"
+    },
+    "522IHD75": {
+      "nazwa": "522iHD75",
+      "mp": "MP_130995433",
+      "article": "970466101"
+    },
+    "522IHDR60BEZAKUMULATORAIADOWARKI": {
+      "nazwa": "522iHDR60 bez akumulatora i ładowarki",
+      "mp": "MP_130995374",
+      "article": "970466201"
+    },
+    "525BX": {
+      "nazwa": "525BX",
+      "mp": "MP_125559774",
+      "article": "967284201"
+    },
+    "525HE3": {
+      "nazwa": "525HE3",
+      "mp": "MP_125561985",
+      "article": "967944901"
+    },
+    "525HE4": {
+      "nazwa": "525HE4",
+      "mp": "MP_125561986",
+      "article": "967945101"
+    },
+    "525IBMARKII": {
+      "nazwa": "525iB Mark II",
+      "mp": "MP_125562402",
+      "article": "967915503"
+    },
+    "525IHE3": {
+      "nazwa": "525iHE3",
+      "mp": "MP_144785264",
+      "article": "970704903"
+    },
+    "525IHE4": {
+      "nazwa": "525iHE4",
+      "mp": "MP_144785274",
+      "article": "970705003"
+    },
+    "525IHF3": {
+      "nazwa": "525iHF3",
+      "mp": "MP_144785305",
+      "article": "970705103"
+    },
+    "525ILKJEDNOSTKANAPDOWA": {
+      "nazwa": "525iLK jednostka napędowa",
+      "mp": "MP_131157500",
+      "article": "970551601"
+    },
+    "525ILXT": {
+      "nazwa": "525iLXT",
+      "mp": "MP_131573109",
+      "article": "970551501"
+    },
+    "525IRXT": {
+      "nazwa": "525iRXT",
+      "mp": "MP_131911230",
+      "article": "970551401"
+    },
+    "525LK": {
+      "nazwa": "525LK",
+      "mp": "MP_125560790",
+      "article": "967148302"
+    },
+    "525LKMARKII": {
+      "nazwa": "525LK Mark II",
+      "mp": "MP_177700915",
+      "article": "970840702"
+    },
+    "525PT5S": {
+      "nazwa": "525PT5S",
+      "mp": "MP_125561218",
+      "article": "967329601"
+    },
+    "525PT5SMARKII": {
+      "nazwa": "525PT5S Mark II",
+      "mp": "MP_194076382",
+      "article": "970840902"
+    },
+    "525RXMARKII": {
+      "nazwa": "525RX Mark II",
+      "mp": "MP_131134454",
+      "article": "970446601"
+    },
+    "530IB": {
+      "nazwa": "530iB",
+      "mp": "MP_151888490",
+      "article": "970656101"
+    },
+    "530IP4": {
+      "nazwa": "530iP4",
+      "mp": "MP_125561888",
+      "article": "967884711"
+    },
+    "530IPT5": {
+      "nazwa": "530iPT5",
+      "mp": "MP_125561889",
+      "article": "967884811"
+    },
+    "535AWD": {
+      "nazwa": "Automower 535 AWD",
+      "mp": "MP_132161171",
+      "article": "970651711"
+    },
+    "535AWDEPOS": {
+      "nazwa": "Automower 535 AWD EPOS",
+      "mp": "MP_159695125",
+      "article": "970745511"
+    },
+    "535IFR": {
+      "nazwa": "535iFR",
+      "mp": "MP_125561837",
+      "article": "967850504"
+    },
+    "535IRX": {
+      "nazwa": "535iRX",
+      "mp": "MP_125561836",
+      "article": "967850605"
+    },
+    "535IRXT": {
+      "nazwa": "535iRXT",
+      "mp": "MP_125562106",
+      "article": "967850607"
+    },
+    "535IXP": {
+      "nazwa": "535i XP",
+      "mp": "MP_125561885",
+      "article": "970716514"
+    },
+    "535RX": {
+      "nazwa": "535RX",
+      "mp": "MP_125560732",
+      "article": "966628802"
+    },
+    "535RXT": {
+      "nazwa": "535RXT",
+      "mp": "MP_125560731",
+      "article": "966628902"
+    },
+    "540EPOS": {
+      "nazwa": "Automower 540 EPOS",
+      "mp": "MP_168621255",
+      "article": "970730311"
+    },
+    "540IXP": {
+      "nazwa": "540i XP",
+      "mp": "MP_133076699",
+      "article": "970572414"
+    },
+    "540IXPG": {
+      "nazwa": "540i XP G",
+      "mp": "MP_132196144",
+      "article": "970568014"
+    },
+    "540XPMARKIII": {
+      "nazwa": "540 XP Mark III",
+      "mp": "MP_125562381",
+      "article": "970793114"
+    },
+    "542IXP": {
+      "nazwa": "542i XP",
+      "mp": "MP_136845969",
+      "article": "970647014"
+    },
+    "542IXPG": {
+      "nazwa": "542i XP G",
+      "mp": "MP_136846021",
+      "article": "970647114"
+    },
+    "543RS": {
+      "nazwa": "543RS",
+      "mp": "MP_125560751",
+      "article": "966779901"
+    },
+    "543XP": {
+      "nazwa": "543 XP",
+      "mp": "MP_125560654",
+      "article": "966776145"
+    },
+    "545F": {
+      "nazwa": "545F",
+      "mp": "MP_125561900",
+      "article": "967884502"
+    },
+    "545FR": {
+      "nazwa": "545FR",
+      "mp": "MP_125561552",
+      "article": "967637904"
+    },
+    "545MARKII": {
+      "nazwa": "Husqvarna 545 Mark II",
+      "mp": "MP_125561700",
+      "article": "967690635"
+    },
+    "545RX": {
+      "nazwa": "545RX",
+      "mp": "MP_125560768",
+      "article": "966015902"
+    },
+    "545RXTAUTOTUNE": {
+      "nazwa": "545RXT AutoTune™",
+      "mp": "MP_125561800",
+      "article": "967176704"
+    },
+    "550": {
+      "nazwa": "Automower 550",
+      "mp": "MP_132183713",
+      "article": "970656511"
+    },
+    "550EPOS": {
+      "nazwa": "Automower 550 EPOS",
+      "mp": "MP_132182786",
+      "article": "970656711"
+    },
+    "550IBTX": {
+      "nazwa": "550iBTX",
+      "mp": "MP_125562255",
+      "article": "967681103"
+    },
+    "550IXP": {
+      "nazwa": "550i XP",
+      "mp": "MP_163668171",
+      "article": "970745815"
+    },
+    "550IXPG": {
+      "nazwa": "550i XP G",
+      "mp": "MP_163668195",
+      "article": "970746015"
+    },
+    "550XPGMARKII": {
+      "nazwa": "550 XP G Mark II",
+      "mp": "MP_125561703",
+      "article": "967690935"
+    },
+    "550XPGMARKIITRIOBRAKE": {
+      "nazwa": "550 XP G Mark II Triobrake",
+      "mp": "MP_126835416",
+      "article": "970528435"
+    },
+    "550XPMARKII": {
+      "nazwa": "550 XP Mark II",
+      "mp": "MP_125561702",
+      "article": "967690835"
+    },
+    "553RS": {
+      "nazwa": "553RS",
+      "mp": "MP_125560700",
+      "article": "966780004"
+    },
+    "555": {
+      "nazwa": "555",
+      "mp": "MP_125562350",
+      "article": "970501215"
+    },
+    "555FXT": {
+      "nazwa": "555FXT",
+      "mp": "MP_125560787",
+      "article": "966629203"
+    },
+    "555RXT": {
+      "nazwa": "555RXT",
+      "mp": "MP_125560785",
+      "article": "966629004"
+    },
+    "560EPOS": {
+      "nazwa": "Automower 560 EPOS",
+      "mp": "MP_159696757",
+      "article": "970730411"
+    },
+    "560XPGMARKII": {
+      "nazwa": "560 XP G Mark II",
+      "mp": "MP_136845793",
+      "article": "970656915"
+    },
+    "560XPMARKII": {
+      "nazwa": "560 XP Mark II",
+      "mp": "MP_136845798",
+      "article": "970657015"
+    },
+    "562XPGMARKII": {
+      "nazwa": "562 XP G Mark II",
+      "mp": "MP_136845851",
+      "article": "970663618"
+    },
+    "562XPMARKII": {
+      "nazwa": "562 XP Mark II",
+      "mp": "MP_136845829",
+      "article": "970663518"
+    },
+    "564XPGZWTRYSKIEMPALIWA": {
+      "nazwa": "564 XP G z wtryskiem paliwa",
+      "mp": "MP_163666028",
+      "article": "970711618"
+    },
+    "564XPZWTRYSKIEMPALIWA": {
+      "nazwa": "564 XP z wtryskiem paliwa",
+      "mp": "MP_163665983",
+      "article": "970711418"
+    },
+    "565": {
+      "nazwa": "565",
+      "mp": "MP_125561418",
+      "article": "966733918"
+    },
+    "570IBT": {
+      "nazwa": "570iBT",
+      "mp": "MP_185356967",
+      "article": "970759101"
+    },
+    "572XP": {
+      "nazwa": "572 XP",
+      "mp": "MP_125561419",
+      "article": "966733118"
+    },
+    "572XPG": {
+      "nazwa": "572 XP G",
+      "mp": "MP_125561264",
+      "article": "966733418"
+    },
+    "580BTS": {
+      "nazwa": "580BTS",
+      "mp": "MP_125559791",
+      "article": "966629601"
+    },
+    "580EPOS": {
+      "nazwa": "Automower 580 EPOS",
+      "mp": "MP_159696762",
+      "article": "970803811"
+    },
+    "580LEPOS": {
+      "nazwa": "Automower 580L EPOS",
+      "mp": "MP_159696763",
+      "article": "970730511"
+    },
+    "585": {
+      "nazwa": "585",
+      "mp": "MP_125562213",
+      "article": "970493030"
+    },
+    "590BTS": {
+      "nazwa": "590BTS",
+      "mp": "MP_167576773",
+      "article": "970551001"
+    },
+    "592XP": {
+      "nazwa": "592 XP",
+      "mp": "MP_125562212",
+      "article": "970493144"
+    },
+    "592XPG": {
+      "nazwa": "592 XP G",
+      "mp": "MP_125562287",
+      "article": "970493454"
+    },
+    "ASPIREB8XP4A": {
+      "nazwa": "Aspire™ B8X-P4A",
+      "mp": "MP_131137628",
+      "article": "970620402"
+    },
+    "ASPIREB8XP4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ B8X-P4A z akumulatorem i ładowarką",
+      "mp": "MP_131137644",
+      "article": "970620404"
+    },
+    "ASPIREBVXP4A": {
+      "nazwa": "Aspire™ BVX-P4A",
+      "mp": "MP_174093412",
+      "article": "970827201"
+    },
+    "ASPIREC15XP4A": {
+      "nazwa": "Aspire™ C15X-P4A",
+      "mp": "MP_150321153",
+      "article": "970720502"
+    },
+    "ASPIREC15XP4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ C15X-P4A z akumulatorem i ładowarką",
+      "mp": "MP_150321146",
+      "article": "970720504"
+    },
+    "ASPIREH50P4A": {
+      "nazwa": "Aspire™ H50-P4A",
+      "mp": "MP_131137645",
+      "article": "970620302"
+    },
+    "ASPIREH50P4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ H50-P4A z akumulatorem i ładowarką",
+      "mp": "MP_131137646",
+      "article": "970620304"
+    },
+    "ASPIRELC34P4A": {
+      "nazwa": "Aspire™ LC34-P4A",
+      "mp": "MP_132750969",
+      "article": "970648301"
+    },
+    "ASPIRELC34P4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ LC34-P4A z akumulatorem i ładowarką",
+      "mp": "MP_132751003",
+      "article": "970648303"
+    },
+    "ASPIREP5P4A": {
+      "nazwa": "Aspire™ P5-P4A",
+      "mp": "MP_131137663",
+      "article": "970621302"
+    },
+    "ASPIREP5P4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ P5-P4A z akumulatorem i ładowarką",
+      "mp": "MP_131137671",
+      "article": "970621305"
+    },
+    "ASPIREP8XP4A": {
+      "nazwa": "Aspire™ P8X-P4A",
+      "mp": "MP_173728766",
+      "article": "970827501"
+    },
+    "ASPIREP8XP4AWYSIGNIKASPIRE": {
+      "nazwa": "Aspire™ P8X-P4A + wysięgnik Aspire™",
+      "mp": "MP_173887563",
+      "article": "970827601"
+    },
+    "ASPIREP8XP4AWYSIGNIKASPIREZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ P8X-P4A + wysięgnik Aspire™ z akumulatorem i ładowarką",
+      "mp": "MP_174092462",
+      "article": "970827602"
+    },
+    "ASPIREPE5P4A": {
+      "nazwa": "Aspire™ PE5-P4A",
+      "mp": "MP_131137680",
+      "article": "970621402"
+    },
+    "ASPIREPE5P4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ PE5-P4A z akumulatorem i ładowarką",
+      "mp": "MP_131137759",
+      "article": "970621405"
+    },
+    "ASPIREPS30XP4A": {
+      "nazwa": "Aspire™ PS30X-P4A",
+      "mp": "MP_174093400",
+      "article": "970827001"
+    },
+    "ASPIREPS30XP4AWYSIGNIKASPIRE": {
+      "nazwa": "Aspire™ PS30X-P4A + wysięgnik Aspire™",
+      "mp": "MP_174883053",
+      "article": "970827101"
+    },
+    "ASPIREPS30XP4AWYSIGNIKASPIREZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ PS30X-P4A + wysięgnik Aspire™ z akumulatorem i ładowarką",
+      "mp": "MP_174884174",
+      "article": "970827102"
+    },
+    "ASPIRER4": {
+      "nazwa": "Automower Aspire™ R4",
+      "mp": "MP_129416031",
+      "article": "970568511"
+    },
+    "ASPIRES20P4A": {
+      "nazwa": "Aspire™ S20-P4A",
+      "mp": "MP_143270452",
+      "article": "970716602"
+    },
+    "ASPIRES20P4AASPIREPOLEP4A": {
+      "nazwa": "Aspire™ S20-P4A + Aspire™ pole-P4A",
+      "mp": "MP_144784227",
+      "article": "970716702"
+    },
+    "ASPIRES20P4AWYSIGNIKASPIREP4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ S20-P4A + wysięgnik Aspire™ P4A z akumulatorem i ładowarką",
+      "mp": "MP_144784233",
+      "article": "970716704"
+    },
+    "ASPIRES20P4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ S20-P4A z akumulatorem i ładowarką",
+      "mp": "MP_143270460",
+      "article": "970716604"
+    },
+    "ASPIRET28P4A": {
+      "nazwa": "Aspire™ T28-P4A",
+      "mp": "MP_131137607",
+      "article": "970620202"
+    },
+    "ASPIRET28P4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Aspire™ T28-P4A z akumulatorem i ładowarką",
+      "mp": "MP_131137597",
+      "article": "970620204"
+    },
+    "AUTOMOWER305": {
+      "nazwa": "AUTOMOWER 305",
+      "mp": "MP_125562084",
+      "article": "967974011"
+    },
+    "AUTOMOWER305ENERA": {
+      "nazwa": "Automower 305E NERA",
+      "mp": "MP_166999491",
+      "article": "970819611"
+    },
+    "AUTOMOWER308V": {
+      "nazwa": "Automower 308V",
+      "mp": "MP_175948704",
+      "article": "970831011"
+    },
+    "AUTOMOWER310ENERA": {
+      "nazwa": "Automower 310E NERA",
+      "mp": "MP_175798925",
+      "article": "970819711"
+    },
+    "AUTOMOWER310MARKII": {
+      "nazwa": "AUTOMOWER 310 Mark II",
+      "mp": "MP_125562447",
+      "article": "970526711"
+    },
+    "AUTOMOWER312V": {
+      "nazwa": "Automower 312V",
+      "mp": "MP_175951439",
+      "article": "970831111"
+    },
+    "AUTOMOWER315MARKII": {
+      "nazwa": "AUTOMOWER 315 Mark II",
+      "mp": "MP_125562448",
+      "article": "970526811"
+    },
+    "AUTOMOWER405VENERA": {
+      "nazwa": "Automower 405VE NERA",
+      "mp": "MP_175801721",
+      "article": "970819911"
+    },
+    "AUTOMOWER405XENERA": {
+      "nazwa": "Automower 405XE NERA",
+      "mp": "MP_159329063",
+      "article": "970654311"
+    },
+    "AUTOMOWER405XENERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 405XE NERA z technologią bezprzewodową",
+      "mp": "MP_159352166",
+      "article": "970774155"
+    },
+    "AUTOMOWER410VENERA": {
+      "nazwa": "Automower 410VE NERA",
+      "mp": "MP_175803538",
+      "article": "970820011"
+    },
+    "AUTOMOWER410XENERA": {
+      "nazwa": "Automower 410XE NERA",
+      "mp": "MP_143361174",
+      "article": "970654411"
+    },
+    "AUTOMOWER410XENERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 410XE NERA z technologią bezprzewodową",
+      "mp": "MP_145874484",
+      "article": "970654455"
+    },
+    "AUTOMOWER415X": {
+      "nazwa": "AUTOMOWER 415X",
+      "mp": "MP_125562280",
+      "article": "970471711"
+    },
+    "AUTOMOWER430VNERA": {
+      "nazwa": "Automower 430V NERA",
+      "mp": "MP_175945538",
+      "article": "970820111"
+    },
+    "AUTOMOWER430XNERA": {
+      "nazwa": "Automower 430X NERA",
+      "mp": "MP_131087317",
+      "article": "970535211"
+    },
+    "AUTOMOWER430XNERAZZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 430X NERA z z technologią bezprzewodową",
+      "mp": "MP_131087424",
+      "article": "970535255"
+    },
+    "AUTOMOWER435XAWDNERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 435X AWD NERA z technologią bezprzewodową",
+      "mp": "MP_159329579",
+      "article": "970745211"
+    },
+    "AUTOMOWER450VNERA": {
+      "nazwa": "Automower 450V NERA",
+      "mp": "MP_175946727",
+      "article": "970820211"
+    },
+    "AUTOMOWER450XNERA": {
+      "nazwa": "Automower 450X NERA",
+      "mp": "MP_131087471",
+      "article": "970535311"
+    },
+    "AUTOMOWER450XNERAZTECHNOLOGIBEZPRZEWODOW": {
+      "nazwa": "Automower 450X NERA z technologią bezprzewodową",
+      "mp": "MP_131087601",
+      "article": "970535355"
+    },
+    "AUTOMOWER520": {
+      "nazwa": "Automower 520",
+      "mp": "MP_132183071",
+      "article": "970656311"
+    },
+    "AUTOMOWER520EPOS": {
+      "nazwa": "Automower 520 EPOS",
+      "mp": "MP_161478653",
+      "article": "970800811"
+    },
+    "AUTOMOWER535AWD": {
+      "nazwa": "Automower 535 AWD",
+      "mp": "MP_132161171",
+      "article": "970651711"
+    },
+    "AUTOMOWER535AWDEPOS": {
+      "nazwa": "Automower 535 AWD EPOS",
+      "mp": "MP_159695125",
+      "article": "970745511"
+    },
+    "AUTOMOWER540EPOS": {
+      "nazwa": "Automower 540 EPOS",
+      "mp": "MP_168621255",
+      "article": "970730311"
+    },
+    "AUTOMOWER550": {
+      "nazwa": "Automower 550",
+      "mp": "MP_132183713",
+      "article": "970656511"
+    },
+    "AUTOMOWER550EPOS": {
+      "nazwa": "Automower 550 EPOS",
+      "mp": "MP_132182786",
+      "article": "970656711"
+    },
+    "AUTOMOWER560EPOS": {
+      "nazwa": "Automower 560 EPOS",
+      "mp": "MP_159696757",
+      "article": "970730411"
+    },
+    "AUTOMOWER580EPOS": {
+      "nazwa": "Automower 580 EPOS",
+      "mp": "MP_159696762",
+      "article": "970803811"
+    },
+    "AUTOMOWER580LEPOS": {
+      "nazwa": "Automower 580L EPOS",
+      "mp": "MP_159696763",
+      "article": "970730511"
+    },
+    "AUTOMOWERASPIRER4": {
+      "nazwa": "Automower Aspire™ R4",
+      "mp": "MP_129416031",
+      "article": "970568511"
+    },
+    "CEORA544EPOSRZ43MCS4": {
+      "nazwa": "CEORA 544 EPOS / RZ 43M / CS4",
+      "mp": "MP_125904744",
+      "article": "970637101"
+    },
+    "CEORA546EPOSRZ43LCS4": {
+      "nazwa": "CEORA 546 EPOS / RZ 43L / CS4",
+      "mp": "MP_145325508",
+      "article": "970750001"
+    },
+    "DE110IH": {
+      "nazwa": "DE 110i H",
+      "mp": "MP_159132581",
+      "article": "970514902"
+    },
+    "EXCLUSIVE54": {
+      "nazwa": "Exclusive 54",
+      "mp": "MP_125559721",
+      "article": "964914001"
+    },
+    "FM410I": {
+      "nazwa": "FM 410i",
+      "mp": "MP_168621346",
+      "article": "970745601"
+    },
+    "FUTERANASEKATOR": {
+      "nazwa": "Futerał na sekator Husqvarna",
+      "mp": "MP_143319740"
+    },
+    "G2500P": {
+      "nazwa": "G2500P",
+      "mp": "MP_125561634",
+      "article": "967665007"
+    },
+    "G3200P": {
+      "nazwa": "G3200P",
+      "mp": "MP_125561635",
+      "article": "967665107"
+    },
+    "GS340IS": {
+      "nazwa": "GS 340is",
+      "mp": "MP_159183258",
+      "article": "970789201"
+    },
+    "GX560": {
+      "nazwa": "GX 560",
+      "mp": "MP_132163385",
+      "article": "970617501"
+    },
+    "HICUT64": {
+      "nazwa": "HiCut 64",
+      "mp": "MP_125559717",
+      "article": "964954002"
+    },
+    "K1270II": {
+      "nazwa": "K 1270 II",
+      "mp": "MP_125562103",
+      "article": "967978701"
+    },
+    "K1270RAILII": {
+      "nazwa": "K 1270 Rail II",
+      "mp": "MP_125562104",
+      "article": "967981901"
+    },
+    "K1PACE": {
+      "nazwa": "K 1 PACE",
+      "mp": "MP_144454486",
+      "article": "970445801"
+    },
+    "K2500": {
+      "nazwa": "K 2500",
+      "mp": "MP_125560689",
+      "article": "968365401"
+    },
+    "K3600RING": {
+      "nazwa": "K 3600 Ring",
+      "mp": "MP_125560690",
+      "article": "968424101"
+    },
+    "K4000": {
+      "nazwa": "K 4000",
+      "mp": "MP_125561424",
+      "article": "967079801"
+    },
+    "K4000CUTNBREAK": {
+      "nazwa": "K 4000 Cut-n-Break",
+      "mp": "MP_125561425",
+      "article": "967079701"
+    },
+    "K540I": {
+      "nazwa": "K 540i",
+      "mp": "MP_146018148",
+      "article": "970664001"
+    },
+    "K7000": {
+      "nazwa": "K 7000",
+      "mp": "MP_125562229",
+      "article": "970744501"
+    },
+    "K7000CHAIN": {
+      "nazwa": "K 7000 Chain",
+      "mp": "MP_125562230",
+      "article": "970756201"
+    },
+    "K7000RING": {
+      "nazwa": "K 7000 Ring",
+      "mp": "MP_125562231",
+      "article": "970756301"
+    },
+    "K760CUTNBREAK": {
+      "nazwa": "K 760 Cut-n-Break",
+      "mp": "MP_125560682",
+      "article": "967195701"
+    },
+    "K770SMARTGUARD": {
+      "nazwa": "K 770 SmartGuard",
+      "mp": "MP_125562238",
+      "article": "970494801"
+    },
+    "K970": {
+      "nazwa": "K 970",
+      "mp": "MP_125561600",
+      "article": "967348001"
+    },
+    "K970CHAIN": {
+      "nazwa": "K 970 Chain",
+      "mp": "MP_125561901",
+      "article": "967660501"
+    },
+    "K970RESCUE": {
+      "nazwa": "K 970 Rescue",
+      "mp": "MP_125561236",
+      "article": "967635601"
+    },
+    "K970RING": {
+      "nazwa": "K 970 Ring",
+      "mp": "MP_125561549",
+      "article": "967272301"
+    },
+    "K970SMARTGUARD": {
+      "nazwa": "K 970 SmartGuard",
+      "mp": "MP_125562239",
+      "article": "970460102"
+    },
+    "LB144": {
+      "nazwa": "LB 144",
+      "mp": "MP_143401208",
+      "article": "970722101"
+    },
+    "LB246IS": {
+      "nazwa": "LB 246iS",
+      "mp": "MP_159181411",
+      "article": "970787501"
+    },
+    "LB251S": {
+      "nazwa": "LB 251S",
+      "mp": "MP_125562329",
+      "article": "970488001"
+    },
+    "LB256SP": {
+      "nazwa": "LB 256SP",
+      "mp": "MP_125562334",
+      "article": "970488501"
+    },
+    "LB442I": {
+      "nazwa": "LB 442i",
+      "mp": "MP_125562320",
+      "article": "970482301"
+    },
+    "LB448I": {
+      "nazwa": "LB 448i",
+      "mp": "MP_125562321",
+      "article": "970482401"
+    },
+    "LB448IV": {
+      "nazwa": "LB 448iV",
+      "mp": "MP_145230438",
+      "article": "970712501"
+    },
+    "LB553IV": {
+      "nazwa": "LB 553iV",
+      "mp": "MP_125562433",
+      "article": "970525701"
+    },
+    "LB553SQE": {
+      "nazwa": "LB 553SQe",
+      "mp": "MP_132162849",
+      "article": "970609101"
+    },
+    "LC137I": {
+      "nazwa": "LC137i",
+      "mp": "MP_125562349",
+      "article": "970500901"
+    },
+    "LC140P": {
+      "nazwa": "LC 140P",
+      "mp": "MP_125562330",
+      "article": "970488101"
+    },
+    "LC140SP": {
+      "nazwa": "LC 140SP",
+      "mp": "MP_125562331",
+      "article": "970488201"
+    },
+    "LC141C": {
+      "nazwa": "LC 141C",
+      "mp": "MP_125561504",
+      "article": "967099301"
+    },
+    "LC142I": {
+      "nazwa": "LC 142i",
+      "mp": "MP_125562491",
+      "article": "970541801"
+    },
+    "LC142IS": {
+      "nazwa": "LC 142iS",
+      "mp": "MP_125562492",
+      "article": "970541901"
+    },
+    "LC151": {
+      "nazwa": "LC 151",
+      "mp": "MP_125562332",
+      "article": "970488301"
+    },
+    "LC151S": {
+      "nazwa": "LC 151S",
+      "mp": "MP_125562333",
+      "article": "970488401"
+    },
+    "LC247": {
+      "nazwa": "LC 247",
+      "mp": "MP_125562484",
+      "article": "970541101"
+    },
+    "LC247I": {
+      "nazwa": "LC 247i",
+      "mp": "MP_125562494",
+      "article": "970542001"
+    },
+    "LC247S": {
+      "nazwa": "LC 247S",
+      "mp": "MP_125562485",
+      "article": "970541201"
+    },
+    "LC251I": {
+      "nazwa": "LC 251i",
+      "mp": "MP_143401241",
+      "article": "970722401"
+    },
+    "LC251IS": {
+      "nazwa": "LC 251iS",
+      "mp": "MP_143401356",
+      "article": "970722601"
+    },
+    "LC253S": {
+      "nazwa": "LC 253S",
+      "mp": "MP_125562488",
+      "article": "970541501"
+    },
+    "LC347IVX": {
+      "nazwa": "LC 347iVX",
+      "mp": "MP_125561865",
+      "article": "967862301"
+    },
+    "LC347IVXZAKUMULATOREMIADOWARK": {
+      "nazwa": "LC 347iVX z akumulatorem i ładowarką",
+      "mp": "MP_125680728",
+      "article": "967862304"
+    },
+    "LC347V": {
+      "nazwa": "LC 347V",
+      "mp": "MP_125562486",
+      "article": "970541301"
+    },
+    "LC347VE": {
+      "nazwa": "LC 347VE",
+      "mp": "MP_125562487",
+      "article": "970541401"
+    },
+    "LC353IVX": {
+      "nazwa": "LC 353iVX",
+      "mp": "MP_125561860",
+      "article": "967862001"
+    },
+    "LC353V": {
+      "nazwa": "LC 353V",
+      "mp": "MP_125562489",
+      "article": "970541601"
+    },
+    "LC353VE": {
+      "nazwa": "LC 353VE",
+      "mp": "MP_125562490",
+      "article": "970541701"
+    },
+    "LC356V": {
+      "nazwa": "LC 356V",
+      "mp": "MP_169526724",
+      "article": "970842501"
+    },
+    "LC356VP": {
+      "nazwa": "LC 356VP",
+      "mp": "MP_125562180",
+      "article": "967988801"
+    },
+    "LC551IV": {
+      "nazwa": "LC 551iV",
+      "mp": "MP_132185563",
+      "article": "970626001"
+    },
+    "LC551SP": {
+      "nazwa": "LC 551SP",
+      "mp": "MP_132141232",
+      "article": "970621701"
+    },
+    "LC551VQ": {
+      "nazwa": "LC 551VQ",
+      "mp": "MP_133179374",
+      "article": "970609401"
+    },
+    "LF50L": {
+      "nazwa": "LF 50 L",
+      "mp": "MP_125561909",
+      "article": "967854702"
+    },
+    "LF80L": {
+      "nazwa": "LF 80 L",
+      "mp": "MP_125561908",
+      "article": "967855001"
+    },
+    "LT6005": {
+      "nazwa": "LT 6005",
+      "mp": "MP_125561910",
+      "article": "967854504"
+    },
+    "MODEL110ILFLXIZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA 110iL FLXi z akumulatorem i ładowarką",
+      "mp": "MP_125562845",
+      "article": "970531202"
+    },
+    "MODEL120IBBEZAKUMULATORAIADOWARKI": {
+      "nazwa": "Model HUSQVARNA 120iB bez akumulatora i ładowarki",
+      "mp": "MP_125562087",
+      "article": "967976101"
+    },
+    "MODEL120IBZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA 120iB z akumulatorem i ładowarką",
+      "mp": "MP_125680712",
+      "article": "967976102"
+    },
+    "MODEL120ITK4PZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA 120iTK4-P z akumulatorem i ładowarką",
+      "mp": "MP_125680732",
+      "article": "970515904"
+    },
+    "MODEL122IBZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model Husqvarna 122iB z akumulatorem i ładowarką",
+      "mp": "MP_173128346",
+      "article": "970827302"
+    },
+    "MODEL215ILZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA 215iL z akumulatorem i ładowarką",
+      "mp": "MP_125562847",
+      "article": "970536003"
+    },
+    "MODEL215IZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model Husqvarna 215i z akumulatorem i ładowarką",
+      "mp": "MP_174387070",
+      "article": "970792004"
+    },
+    "MODEL220IRZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model Husqvarna 220iR z akumulatorem i ładowarką",
+      "mp": "MP_162704701",
+      "article": "970754402"
+    },
+    "MODEL325ILKJEDNOSTKANAPDOWA": {
+      "nazwa": "Model HUSQVARNA 325iLK jednostka napędowa",
+      "mp": "MP_125561835",
+      "article": "967850106"
+    },
+    "MODEL325ILKZPRZYSTAWK": {
+      "nazwa": "Model HUSQVARNA 325iLK z przystawką",
+      "mp": "MP_125680735",
+      "article": "967850105"
+    },
+    "MODEL440IZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model Husqvarna 440i z akumulatorem i ładowarką",
+      "mp": "MP_194387826",
+      "article": "970844815"
+    },
+    "MODELASPIREBVXP4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model Aspire™ BVX-P4A z akumulatorem i ładowarką",
+      "mp": "MP_174240436",
+      "article": "970827202"
+    },
+    "MODELASPIREP8XP4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model Aspire™ P8X-P4A z akumulatorem i ładowarką",
+      "mp": "MP_173886588",
+      "article": "970827502"
+    },
+    "MODELASPIREPS30XP4AZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model Aspire™ PS30X-P4A z akumulatorem i ładowarką",
+      "mp": "MP_174882964",
+      "article": "970827002"
+    },
+    "MODELLC137IZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA LC 137i z akumulatorem i ładowarką",
+      "mp": "MP_125680729",
+      "article": "970500904"
+    },
+    "MODELLC142ISZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA LC 142iS z akumulatorem i ładowarką",
+      "mp": "MP_125562849",
+      "article": "970541902"
+    },
+    "MODELLC142IZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA LC 142i z akumulatorem i ładowarką",
+      "mp": "MP_125562848",
+      "article": "970541804"
+    },
+    "MODELS138IBEZAKUMULATORAIADOWARKI": {
+      "nazwa": "Model HUSQVARNA S 138i bez akumulatora i ładowarki",
+      "mp": "MP_125561963",
+      "article": "967922206"
+    },
+    "MODELS138IZAKUMULATOREMIADOWARK": {
+      "nazwa": "Model HUSQVARNA S 138i z akumulatorem i ładowarką",
+      "mp": "MP_125680739",
+      "article": "967922203"
+    },
+    "MODELTH125IBEZAKUMULATORAIADOWARKI": {
+      "nazwa": "Model Husqvarna TH 125i bez akumulatora i ładowarki",
+      "mp": "MP_169561356",
+      "article": "970842401"
+    },
+    "ODNIEARKAST143I": {
+      "nazwa": "Odśnieżarka Husqvarna ST 143i",
+      "mp": "MP_164894582",
+      "article": "970789001"
+    },
+    "ODNIEARKAST253I": {
+      "nazwa": "Odśnieżarka Husqvarna ST 253i",
+      "mp": "MP_164896388",
+      "article": "970789101"
+    },
+    "ODNIEARKAST269": {
+      "nazwa": "Odśnieżarka Husqvarna ST 269",
+      "mp": "MP_164896534",
+      "article": "970787301"
+    },
+    "ODNIEARKAST376": {
+      "nazwa": "Odśnieżarka Husqvarna ST 376",
+      "mp": "MP_164896540",
+      "article": "970787401"
+    },
+    "P520DX": {
+      "nazwa": "P 520DX",
+      "mp": "MP_125562129",
+      "article": "967985201"
+    },
+    "P524X": {
+      "nazwa": "P 524X",
+      "mp": "MP_132461506",
+      "article": "970601501"
+    },
+    "P525DX": {
+      "nazwa": "P 525DX",
+      "mp": "MP_125562130",
+      "article": "967985301"
+    },
+    "P525DXZKABIN": {
+      "nazwa": "P 525DX z kabiną",
+      "mp": "MP_125562131",
+      "article": "967985401"
+    },
+    "P535HX": {
+      "nazwa": "P 535HX",
+      "mp": "MP_125562132",
+      "article": "967985503"
+    },
+    "PILARKAAKUMULATOROWA225IZAKUMULATOREMIADOWARK": {
+      "nazwa": "Pilarka akumulatorowa Husqvarna 225i z akumulatorem i ładowarką.",
+      "mp": "MP_131084769",
+      "article": "970547506"
+    },
+    "PILARKAAKUMULATOROWA240IZAKUMULATOREMIADOWARK": {
+      "nazwa": "Pilarka akumulatorowa Husqvarna 240i​ z akumulatorem i ładowarką",
+      "mp": "MP_131755042",
+      "article": "970601107"
+    },
+    "PW130": {
+      "nazwa": "PW 130",
+      "mp": "MP_131921240",
+      "article": "970648001"
+    },
+    "PW235R": {
+      "nazwa": "PW 235R",
+      "mp": "MP_125561655",
+      "article": "970457401"
+    },
+    "PW240": {
+      "nazwa": "PW 240",
+      "mp": "MP_131922013",
+      "article": "970648101"
+    },
+    "PW350": {
+      "nazwa": "PW 350",
+      "mp": "MP_143401379",
+      "article": "970725801"
+    },
+    "PW360": {
+      "nazwa": "PW 360",
+      "mp": "MP_143401466",
+      "article": "970726201"
+    },
+    "PW370": {
+      "nazwa": "PW 370",
+      "mp": "MP_143457096",
+      "article": "970726601"
+    },
+    "PW480": {
+      "nazwa": "PW 480",
+      "mp": "MP_125562267",
+      "article": "970468301"
+    },
+    "PW490": {
+      "nazwa": "PW 490",
+      "mp": "MP_125562268",
+      "article": "970468401"
+    },
+    "R112C": {
+      "nazwa": "R 112C",
+      "mp": "MP_125560951",
+      "article": "967178402"
+    },
+    "R112C5": {
+      "nazwa": "R 112C5",
+      "mp": "MP_125560952",
+      "article": "967178502"
+    },
+    "R112IC": {
+      "nazwa": "R 112iC",
+      "mp": "MP_125561834",
+      "article": "967848201"
+    },
+    "R200IX": {
+      "nazwa": "R 200iX",
+      "mp": "MP_132163477",
+      "article": "970649901"
+    },
+    "R200IXAWD": {
+      "nazwa": "R 200iX AWD",
+      "mp": "MP_159082237",
+      "article": "970748001"
+    },
+    "R200IXAWDLONGRANGE": {
+      "nazwa": "R 200iX AWD Long Range",
+      "mp": "MP_169522924",
+      "article": "970842901"
+    },
+    "R214TC": {
+      "nazwa": "R 214TC",
+      "mp": "MP_125562497",
+      "article": "970542301"
+    },
+    "R214TC103": {
+      "nazwa": "R 214TC 103",
+      "mp": "MP_169521854",
+      "article": "970843001"
+    },
+    "R214TCCOMFORTEDITION": {
+      "nazwa": "R214TC Comfort edition",
+      "mp": "MP_125562569",
+      "article": "970569101"
+    },
+    "R214TS": {
+      "nazwa": "R 214Ts",
+      "mp": "MP_169556450",
+      "article": "970790801"
+    },
+    "R216TAWD": {
+      "nazwa": "R 216T AWD",
+      "mp": "MP_125562498",
+      "article": "970542401"
+    },
+    "R216TSAWD": {
+      "nazwa": "R 216Ts AWD",
+      "mp": "MP_169557934",
+      "article": "970841401"
+    },
+    "R316TSXAWD": {
+      "nazwa": "R 316TsX AWD",
+      "mp": "MP_125562503",
+      "article": "970542901"
+    },
+    "R316TXAWD": {
+      "nazwa": "R 316TX AWD",
+      "mp": "MP_125562502",
+      "article": "970542801"
+    },
+    "R318X": {
+      "nazwa": "R 318X",
+      "mp": "MP_131560346",
+      "article": "970542501"
+    },
+    "R320XAWD": {
+      "nazwa": "R 320X AWD",
+      "mp": "MP_131474916",
+      "article": "970542601"
+    },
+    "R418TSXAWD": {
+      "nazwa": "R 418TsX AWD",
+      "mp": "MP_133206398",
+      "article": "970544901"
+    },
+    "R420TSXAWD": {
+      "nazwa": "R 420TsX AWD",
+      "mp": "MP_125561572",
+      "article": "967648401"
+    },
+    "RC318T": {
+      "nazwa": "RC 318T",
+      "mp": "MP_131474478",
+      "article": "970621101"
+    },
+    "RC320TSAWD": {
+      "nazwa": "RC 320Ts AWD",
+      "mp": "MP_131474664",
+      "article": "970621201"
+    },
+    "ROBOTKOSZCY320NERA": {
+      "nazwa": "Robot koszący Husqvarna Automower 320 NERA",
+      "mp": "MP_175800615",
+      "article": "970819811"
+    },
+    "ROBOTKOSZCYAUTOMOWER320NERA": {
+      "nazwa": "Robot koszący Husqvarna Automower 320 NERA",
+      "mp": "MP_175800615",
+      "article": "970819811"
+    },
+    "S138C": {
+      "nazwa": "S 138C",
+      "mp": "MP_125561962",
+      "article": "967922301"
+    },
+    "S500PRO": {
+      "nazwa": "S 500 PRO",
+      "mp": "MP_133206013",
+      "article": "970652901"
+    },
+    "SEKATORDUY": {
+      "nazwa": "Sekator duży Husqvarna",
+      "mp": "MP_143317235"
+    },
+    "SEKATORREDNI": {
+      "nazwa": "Sekator średni Husqvarna",
+      "mp": "MP_143317199"
+    },
+    "SKRZYNKANAASPIRE": {
+      "nazwa": "Skrzynka na Husqvarna Aspire™",
+      "mp": "MP_131137650",
+      "article": "970621305"
+    },
+    "ST124": {
+      "nazwa": "ST 124",
+      "mp": "MP_125562227",
+      "article": "970449302"
+    },
+    "ST224": {
+      "nazwa": "ST 224",
+      "mp": "MP_125560994",
+      "article": "970528601"
+    },
+    "ST227": {
+      "nazwa": "ST 227",
+      "mp": "MP_125562269",
+      "article": "970528701"
+    },
+    "ST230": {
+      "nazwa": "ST 230",
+      "mp": "MP_125562270",
+      "article": "970528801"
+    },
+    "ST327": {
+      "nazwa": "ST 327",
+      "mp": "MP_125561839",
+      "article": "970529001"
+    },
+    "ST330": {
+      "nazwa": "ST 330",
+      "mp": "MP_125561840",
+      "article": "970529101"
+    },
+    "ST427T": {
+      "nazwa": "ST 427T",
+      "mp": "MP_125561982",
+      "article": "970529501"
+    },
+    "T435": {
+      "nazwa": "T435",
+      "mp": "MP_125560548",
+      "article": "966997214"
+    },
+    "T525": {
+      "nazwa": "T525",
+      "mp": "MP_125561255",
+      "article": "970737510"
+    },
+    "T535IXP": {
+      "nazwa": "T535i XP",
+      "mp": "MP_125561886",
+      "article": "970716412"
+    },
+    "T540IXP": {
+      "nazwa": "T540i XP",
+      "mp": "MP_133076744",
+      "article": "970572312"
+    },
+    "T540IXPG": {
+      "nazwa": "T540i XP G",
+      "mp": "MP_132195958",
+      "article": "970568114"
+    },
+    "T540XPMARKIII": {
+      "nazwa": "T540 XP Mark III",
+      "mp": "MP_125562382",
+      "article": "970793214"
+    },
+    "T542IXP": {
+      "nazwa": "T542i XP",
+      "mp": "MP_136846144",
+      "article": "970646814"
+    },
+    "T542IXPG": {
+      "nazwa": "T542i XP G",
+      "mp": "MP_136846198",
+      "article": "970646914"
+    },
+    "TC100I": {
+      "nazwa": "TC 100i",
+      "mp": "MP_143401555",
+      "article": "970745001"
+    },
+    "TC112": {
+      "nazwa": "TC 112",
+      "mp": "MP_132161556",
+      "article": "970622201"
+    },
+    "TC114": {
+      "nazwa": "TC 114",
+      "mp": "MP_132161788",
+      "article": "970622301"
+    },
+    "TC215T": {
+      "nazwa": "TC 215T",
+      "mp": "MP_143401608",
+      "article": "970727701"
+    },
+    "TC220T": {
+      "nazwa": "TC 220T",
+      "mp": "MP_143401714",
+      "article": "970727801"
+    },
+    "TF120": {
+      "nazwa": "TF 120",
+      "mp": "MP_125561508",
+      "article": "967100803"
+    },
+    "TF225": {
+      "nazwa": "TF 225",
+      "mp": "MP_125561509",
+      "article": "967100901"
+    },
+    "TF335": {
+      "nazwa": "TF 335",
+      "mp": "MP_132039428",
+      "article": "970652701"
+    },
+    "TF435P": {
+      "nazwa": "TF 435P",
+      "mp": "MP_125561513",
+      "article": "967101301"
+    },
+    "TR348": {
+      "nazwa": "TR 348",
+      "mp": "MP_132040288",
+      "article": "970652801"
+    },
+    "TS100I": {
+      "nazwa": "TS 100i",
+      "mp": "MP_143401573",
+      "article": "970745101"
+    },
+    "TS112": {
+      "nazwa": "TS 112",
+      "mp": "MP_132161870",
+      "article": "970622401"
+    },
+    "TS114": {
+      "nazwa": "TS 114",
+      "mp": "MP_132161908",
+      "article": "970622501"
+    },
+    "TS215T": {
+      "nazwa": "TS 215T",
+      "mp": "MP_143401591",
+      "article": "970728001"
+    },
+    "TS217T": {
+      "nazwa": "TS 217T",
+      "mp": "MP_143401619",
+      "article": "970728101"
+    },
+    "TS220T": {
+      "nazwa": "TS 220T",
+      "mp": "MP_143401669",
+      "article": "970728301"
+    },
+    "W50P": {
+      "nazwa": "W50P",
+      "mp": "MP_125561555",
+      "article": "967639003"
+    },
+    "W80P": {
+      "nazwa": "W80P",
+      "mp": "MP_125561556",
+      "article": "967639103"
+    },
+    "WB560I": {
+      "nazwa": "WB 560i",
+      "mp": "MP_187008782",
+      "article": "970819201"
+    },
+    "WDC220": {
+      "nazwa": "WDC 220",
+      "mp": "MP_125561911",
+      "article": "967907901"
+    },
+    "WDC325L": {
+      "nazwa": "WDC 325L",
+      "mp": "MP_125561913",
+      "article": "967908101"
+    },
+    "WYSIGNIKASPIREP4A": {
+      "nazwa": "Wysięgnik Husqvarna Aspire™ P4A",
+      "mp": "MP_144638348",
+      "article": "970716604"
+    },
+    "Z242F": {
+      "nazwa": "Z242F",
+      "mp": "MP_125563076",
+      "article": "967665704"
+    },
+    "Z342IF": {
+      "nazwa": "Z 342iF",
+      "mp": "MP_170139552",
+      "article": "970842801"
+    },
+    "Z448": {
+      "nazwa": "Z448",
+      "mp": "MP_125563111",
+      "article": "967984602"
+    },
+    "Z454X": {
+      "nazwa": "Z454X",
+      "mp": "MP_125563114",
+      "article": "970576401"
+    },
+    "Z560X": {
+      "nazwa": "Z560X",
+      "mp": "MP_133895536",
+      "article": "970640901"
+    },
+    "ZESTAWPODKASZARKA215ILINOYCEDOYWOPOTU215IHD45": {
+      "nazwa": "Zestaw podkaszarka 215iL i nożyce do żywopłotu 215iHD45",
+      "mp": "MP_125562479",
+      "article": "970536101"
+    }
   }
 }

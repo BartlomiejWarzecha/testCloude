@@ -11,6 +11,8 @@
 //    -> schematy modeli z listy "modele", których nazwa pasuje do tytułu
 //       lub atrybutu "Modele Husqvarna:" (np. bateria 430X 440 450X 550)
 //    -> oraz karta części Husqvarna: /pl/part/<Kod towaru>
+//  * WYSZUKIWANIE – fraza o Husqvarnie (np. "LC 140P", "husqvarna")
+//    -> panel nad wynikami: schematy pasujących modeli + katalog Husqvarna
 //
 // Katalog nie pozwala podlinkować konkretnego zespołu (np. "Chassis lower"):
 // otwiera model, a klient wybiera zespół w katalogu.
@@ -28,7 +30,8 @@
         domena:           'https://www.betkowskiservice.pl/',   // parametr ?domain= (koszyk z katalogu)
         daneUrl:          '/usr/xepc-schematy.json',
         marka:            /husqvarna|hqv|automower/i,           // tryb CZĘŚĆ tylko dla takich nazw
-        pokazKarteCzesci: true,
+        pokazKarteCzesci: true,         // "Karta części" jako dodatkowy przycisk obok schematów
+        kartaCzesciBezSchematu: false,  // true = zakładka z samą kartą części, gdy brak schematu
         nazwaZakladki:      'Części zamienne',   // maszyna
         nazwaZakladkiCzesc: 'Schemat części',    // część
         // Tryb automatyczny: maszyna po samym Kodzie towaru, bez wpisu w "produkty".
@@ -40,6 +43,7 @@
         // Numery maszyn Husqvarna (900…, 901…, 953…, 967…, 970… itd.). Części to zwykle 5…
         // Takie kody nigdy nie dostają sekcji "część" (karta części dla maszyny = błąd).
         wzorMaszyny:      /^9\d{8}$/,
+        maxModeliWyszukiwania: 6,   // ile przycisków modeli na stronie wyszukiwania
         wysokosc:         900,   // px, zanim katalog poda swoją wysokość
         debug:            true
     };
@@ -117,10 +121,17 @@
             Object.prototype.hasOwnProperty.call(produkty, bazowy) || CONFIG.wzorMaszyny.test(bazowy);
         if (!kod || jestMaszyna || !CONFIG.marka.test(karta.nazwa || '')) return { tryb: null, widoki: [] };
 
+        // Modele z listy "modele" + ze słownika "nazwy" (husqvarna.com), np. "LC 353VE".
         var tekst = [karta.nazwa, karta.modele].join(' ');
-        var widoki = dopasujModele(tekst, dane.modele).map(function (m) {
+        var modele = [], byly = {};
+        dopasujModele(tekst, dane.modele).concat(modeleZeSlownika(tekst, dane.nazwy, true)).forEach(function (m) {
+            if (!byly[m.mp]) { byly[m.mp] = true; modele.push(m); }
+        });
+        var widoki = modele.slice(0, CONFIG.maxModeliWyszukiwania).map(function (m) {
             return { etykieta: 'Schemat: ' + m.nazwa, url: urlProduktu(m.mp, m.article) };
         });
+        // Bez schematu nie pokazujemy samej karty części (klient szuka schematu, nie drugiej karty).
+        if (!widoki.length && !CONFIG.kartaCzesciBezSchematu) return { tryb: null, widoki: [] };
         if (CONFIG.pokazKarteCzesci) {
             widoki.push({ etykieta: 'Karta części ' + kod, url: urlCzesci(kod) });
         }
@@ -274,17 +285,154 @@
         if (/[#&]czesci\b/.test(global.location.hash)) przycisk.click();
     }
 
-    function start() {
-        var karta = czytajKarte();
-        if (!karta.kod) return;   // to nie jest karta produktu
+    // ── Strona wyników wyszukiwania ──────────────────────────────────────────
+    // Panel nad listą produktów, gdy fraza dotyczy Husqvarny:
+    //  * modele z frazy ("LC 140P" -> słownik "nazwy" z husqvarna.com)
+    //  * maszyny z wyników, które mają MP_… w "produkty"
+    //  * zawsze: strona startowa katalogu (klient wyszuka model sam, np. "LC140")
+    function frazaWyszukiwania() {
+        try {
+            var p = new global.URLSearchParams(global.location.search);
+            return (p.get('search') || p.get('seaAtc') || '').trim();
+        } catch (e) { return ''; }
+    }
 
-        global.fetch(CONFIG.daneUrl, { credentials: 'same-origin' }).then(function (res) {
+    function kluczNazwy(s) {
+        return String(s || '').toUpperCase().replace(/HUSQVARNA/g, '').replace(/[^A-Z0-9]/g, '');
+    }
+
+    // Modele ze słownika "nazwy" we frazie/tytule: "kosiarka lc 140p" -> "LC140P"
+    // (łączymy do 3 sąsiednich słów). bezpieczne=true (tytuły części): tylko klucze
+    // z literą i cyfrą, bo same liczby ("550", "305") mylą modele różnych maszyn.
+    function modeleZeSlownika(tekst, nazwy, bezpieczne) {
+        var wynik = [];
+        if (!nazwy) return wynik;
+        var tokeny = String(tekst || '').split(/[\s,;\/()]+/).filter(Boolean);
+        for (var i = 0; i < tokeny.length; i++) {
+            for (var j = Math.min(tokeny.length, i + 3); j > i; j--) {
+                var k = kluczNazwy(tokeny.slice(i, j).join(''));
+                if (k.length < 3 || !nazwy[k]) continue;
+                if (bezpieczne && (k.length < 4 || !/[A-Z]/.test(k) || !/\d/.test(k))) continue;
+                if (wynik.indexOf(nazwy[k]) < 0) wynik.push(nazwy[k]);
+            }
+        }
+        return wynik;
+    }
+
+    function dopasujWyszukiwanie(fraza, wyniki, dane, sciezka) {
+        dane = dane || {};
+        wyniki = wyniki || [];
+        var nazwy = dane.nazwy || {}, produkty = dane.produkty || {};
+        var modele = [], byly = {};
+        function dodaj(m) { if (m && m.mp && !byly[m.mp]) { byly[m.mp] = true; modele.push(m); } }
+
+        modeleZeSlownika(fraza, nazwy, false).forEach(dodaj);
+        var nazwaPoMp = {};
+        Object.keys(nazwy).forEach(function (k) { nazwaPoMp[nazwy[k].mp] = nazwy[k].nazwa; });
+        wyniki.forEach(function (pr) {
+            var kod = normalizujKod(pr.Code);
+            var baz = (/^\d{9}/.exec(kod) || [kod])[0];
+            var v = produkty[kod];
+            if (v === undefined && baz !== kod) v = produkty[baz];
+            if (typeof v === 'string') v = { mp: v };
+            if (v && v.mp) {
+                var nazwa = v.nazwa || nazwaPoMp[v.mp] || String(pr.NameNoHtml || '').replace(/^.*?husqvarna\s+/i, '') || baz;
+                dodaj({ nazwa: nazwa, mp: v.mp, article: v.article || baz });
+            }
+        });
+
+        var husq = CONFIG.marka.test(fraza || '') || /producent=husqvarna/i.test(sciezka || '') ||
+            modele.length > 0 ||
+            wyniki.filter(function (pr) { return CONFIG.marka.test(pr.NameNoHtml || ''); }).length * 2 > wyniki.length && wyniki.length > 0;
+        if (!husq) return { widoki: [] };
+
+        var widoki = modele.slice(0, CONFIG.maxModeliWyszukiwania).map(function (m) {
+            return { etykieta: 'Schemat: ' + m.nazwa, url: urlProduktu(m.mp, m.article || null) };
+        });
+        widoki.push({ etykieta: 'Katalog części Husqvarna', url: CONFIG.xepcBase + '?domain=' + encodeURIComponent(CONFIG.domena) });
+        return { widoki: widoki };
+    }
+
+    function wstawPanelWyszukiwania(fraza, wynik) {
+        var lista = document.querySelector('.product-list-js');
+        if (!lista || document.querySelector('.xepc-wyszukiwanie')) return;
+
+        var sekcja = document.createElement('section');
+        sekcja.className = 'xepc-schemat xepc-wyszukiwanie';
+        var h = document.createElement('h2');
+        h.textContent = 'Schematy części Husqvarna';
+        sekcja.appendChild(h);
+        var info = document.createElement('p');
+        info.textContent = wynik.widoki.length > 1
+            ? 'Otwórz schemat modelu i dodaj części do koszyka prosto z katalogu.'
+            : 'Nie znalazłeś części dla „' + fraza + '”? Wyszukaj model w oficjalnym katalogu Husqvarna i dodaj część do koszyka prosto z katalogu.';
+        sekcja.appendChild(info);
+
+        var ramka = document.createElement('iframe');
+        ramka.title = 'Katalog części Husqvarna';
+        ramka.style.height = CONFIG.wysokosc + 'px';
+        ramka.style.display = 'none';
+
+        var tabs = document.createElement('div');
+        tabs.className = 'xepc-schemat__tabs';
+        wynik.widoki.forEach(function (w) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'xepc-schemat__tab';
+            b.setAttribute('aria-selected', 'false');
+            b.textContent = w.etykieta;
+            b.addEventListener('click', function () {
+                var otwarty = b.getAttribute('aria-selected') === 'true';
+                Array.prototype.forEach.call(tabs.children, function (x) { x.setAttribute('aria-selected', 'false'); });
+                if (otwarty) { ramka.style.display = 'none'; return; }   // drugie kliknięcie zwija
+                b.setAttribute('aria-selected', 'true');
+                ramka.style.display = 'block';
+                ramka.style.height = CONFIG.wysokosc + 'px';
+                if (ramka.getAttribute('src') !== w.url) ramka.src = w.url;
+            });
+            tabs.appendChild(b);
+        });
+        sekcja.appendChild(tabs);
+        sekcja.appendChild(ramka);
+        lista.insertBefore(sekcja, lista.firstChild);
+    }
+
+    function startWyszukiwanie(fraza) {
+        Promise.all([
+            ladujDane(),
+            Promise.resolve(global.$ && global.$.get(global.location.href, { __collection: 'products.Products' }))
+                .then(function (odp) {
+                    var c = odp && odp.collection;
+                    return Array.isArray(c) ? c : (c && (c['products.Products'] || c.Products)) || [];
+                }, function () { return []; })
+        ]).then(function (w) {
+            var wynik = dopasujWyszukiwanie(fraza, w[1], w[0], global.location.pathname);
+            log('wyszukiwanie', fraza, wynik);
+            if (!wynik.widoki.length) return;
+            wstawStyle();
+            wstawPanelWyszukiwania(fraza, wynik);
+        });
+    }
+
+    function ladujDane() {
+        return global.fetch(CONFIG.daneUrl, { credentials: 'same-origin' }).then(function (res) {
             if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + CONFIG.daneUrl);
             return res.json();
         }).catch(function (e) {
             console.warn('[xepc-schemat] dane:', e.message);
             return {};
-        }).then(function (dane) {
+        });
+    }
+
+    function start() {
+        var karta = czytajKarte();
+        if (!karta.kod) {
+            var fraza = frazaWyszukiwania();
+            if (fraza && document.querySelector('.product-list-js')) startWyszukiwanie(fraza);
+            return;
+        }
+
+        ladujDane().then(function (dane) {
             var wynik = zbudujWidoki(karta, dane);
             log(karta, wynik);
             if (!wynik.widoki.length) return;
@@ -303,7 +451,8 @@
         zbudujWidoki:  zbudujWidoki,
         dopasujModele: dopasujModele,
         urlProduktu:   urlProduktu,
-        urlCzesci:     urlCzesci
+        urlCzesci:     urlCzesci,
+        dopasujWyszukiwanie: dopasujWyszukiwanie
     };
 
 })(typeof window !== 'undefined' ? window : globalThis);
