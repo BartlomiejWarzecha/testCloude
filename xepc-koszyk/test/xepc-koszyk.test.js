@@ -22,13 +22,18 @@ const produkty = {
     // kilka wariantów -> nie zgadujemy
     '500000001': [{ Id: 900, Code: '500000001', Url: 'wiele,3,1,900',
                     AttributesList: { Attributes: [{ Id: 1, Values: [{ ValueId: -1 }] }] } }],
+    // pusty atrybut "Wyprzedaż " (ValueId -1), karta bez wyboru wariantu -> tylko attributeId
+    '599662601': [{ Id: 48016, Code: '599662601', Url: 'zasilacz,3,40245,48016',
+                    AttributesList: { Attributes: [{ Id: 1, Name: 'Wyprzedaż ', Values: [{ ValueId: -1 }] }],
+                                      AttributesPolyvalent: [{ Values: [{ ValueId: 2765 }] }] } }],
     // wyszukiwarka zwraca coś podobnego, ale nie ten numer
     '111111111': [{ Id: 777, GIDNumber: 777, Code: '1111111110' }]
 };
 const supplies = ids => '<input name="supplyId" type="hidden" id="supplyId" data-supplies="' +
     JSON.stringify({ Supplies: [{ ValueId: -1, Supplies: ids.map(id => ({ SupplyId: id, Key: '-1', Supplies: [] })) }] })
         .replace(/"/g, '&quot;') + '" data-clip="1"/>';
-const strony = { '/kolo-przednie,3,40217,48426': supplies([48426]), '/wiele,3,1,900': supplies([901, 902]) };
+const strony = { '/kolo-przednie,3,40217,48426': supplies([48426]), '/wiele,3,1,900': supplies([901, 902]),
+                 '/zasilacz,3,40245,48016': '<input name="attributeId" type="hidden" value="2765"/>' };
 global.location = { pathname: '/husqvarna_katalog,37' };
 // Karta produktu pobierana zwykłym fetch (bez X-Requested-With)
 global.fetch = async url => strony[url]
@@ -85,6 +90,10 @@ const send = (origin, data) => listeners.forEach(fn => fn({ origin, data, source
     assert.strictEqual(kolo.supplyId, '48426');
     assert.deepStrictEqual(kolo.attributeId, []);
     assert.strictEqual((await X.znajdzProdukt('500000001')).doWyboru, true);
+    const zasilacz = await X.znajdzProdukt('599662601');
+    assert.strictEqual(zasilacz.doWyboru, false);
+    assert.strictEqual(zasilacz.supplyId, null);
+    assert.deepStrictEqual(zasilacz.attributeId, ['2765']);
     // Tylko identyczny kod
     assert.strictEqual(await X.znajdzIdProduktu('111111111'), null);
 

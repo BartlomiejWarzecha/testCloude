@@ -119,7 +119,8 @@
     //    -> attributeId: domyślna (pierwsza) wartość każdego atrybutu,
     //       np. bateria 529606802 -> [2927], brzeszczot 578443701 -> [2183,1893,2187,2931]
     //  * warianty (Attributes, np. "Modele Husqvarna:" przy kole 589300801)
-    //    -> supplyId z data-supplies na karcie produktu, tylko gdy wariant jest jeden.
+    //    -> supplyId z data-supplies na karcie produktu, gdy wariant jest jeden;
+    //       brak data-supplies na karcie = brak wyboru wariantu (tylko attributeId).
     var cacheProduktow = new Map();   // kod -> Promise<produkt | null>
 
     function listaProduktow(odp) {
@@ -194,9 +195,11 @@
             };
             if (!maWarianty(pr) || !produkt.url) return produkt;
 
+            // Brak wyboru wariantu na karcie (np. pusty atrybut "Wyprzedaż"/"KonradTMP"
+            // z ValueId -1) -> przycisk sklepu wysyła tylko attributeId, my też.
             return wariantyZeStrony(produkt.url).then(function (ids) {
                 if (ids.length === 1) produkt.supplyId = ids[0];
-                else produkt.doWyboru = true;
+                else if (ids.length > 1) produkt.doWyboru = true;
                 return produkt;
             });
         }).then(function (produkt) {
