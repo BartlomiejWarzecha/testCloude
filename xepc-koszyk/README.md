@@ -87,3 +87,55 @@ koszyka. Klient zobaczy komunikat, że części nie ma w sklepie.
 ```
 node xepc-koszyk/test/xepc-koszyk.test.js
 ```
+
+# Schemat na karcie produktu (`xepc-schemat.js`)
+
+Na karcie produktu w sklepie pokazuje oficjalny katalog Husqvarny, osobno
+dla części i osobno dla maszyn. Tryb wybiera sam, po „Kod towaru”:
+
+| Tryb | Kiedy | Co pokazuje |
+|---|---|---|
+| **Część** | nazwa zawiera Husqvarna/HQV/Automower | schemat każdego modelu z listy `modele`, który pasuje do tytułu lub atrybutu „Modele Husqvarna:” + „Karta części” (`/pl/part/<Kod>`, działa dla każdego kodu, bez listy) |
+| **Produkt** (maszyna) | „Kod towaru” jest w `produkty` | wszystkie schematy tej maszyny |
+
+Katalog nie pozwala podlinkować konkretnego zespołu (np. „Chassis lower”).
+Otwiera model, a klient wybiera zespół w katalogu. „Dodaj do koszyka” w
+ramce działa tak samo jak na stronie katalogu, bo obsługuje go
+`xepc-koszyk.js`.
+
+## Lista modeli: `xepc-schematy.json`
+
+```json
+{
+  "modele": [
+    { "nazwa": "Automower 430X", "szukaj": ["430X"], "kontekst": "automower",
+      "mp": "MP_125561650", "article": "967673202" }
+  ],
+  "produkty": {
+    "<Kod towaru maszyny w sklepie>": { "nazwa": "Automower 430X", "mp": "MP_125561650", "article": "967673202" }
+  }
+}
+```
+
+- `mp` i `article` pochodzą z adresu modelu w katalogu. Otwórz
+  `https://xepc-prod.husqvarnagroup.com/pl` w osobnej karcie, wejdź w model
+  i skopiuj z paska adresu `…/product/MP_125561650?article=967673202`.
+- `szukaj` to nazwy, pod którymi model występuje w tytułach i atrybutach
+  (np. `"430X"`). `"430X"` nie złapie `"430XH"`.
+- `kontekst` to słowo, które musi być w nazwie lub atrybutach. Dzięki niemu
+  „Husqvarna 440” przy łańcuchu nie zostanie pomylone z Automower 440.
+
+## Wdrożenie
+
+1. Wgraj do `/usr/` pliki `xepc-schemat.js`, `xepc-schematy.json` i
+   `xepc-koszyk.js`.
+2. Dodaj oba skrypty do szablonu karty produktu (albo do szablonu całego
+   sklepu, bo na innych stronach nic nie robią):
+   ```html
+   <script src="/usr/xepc-koszyk.js"></script>
+   <script src="/usr/xepc-schemat.js"></script>
+   ```
+3. Dopisuj modele do `xepc-schematy.json`. Zmiana działa od razu, bez
+   podmiany skryptu.
+
+Test lokalny: `node xepc-koszyk/test/xepc-schemat.test.js`
