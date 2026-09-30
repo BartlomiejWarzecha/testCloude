@@ -4,7 +4,7 @@
 //
 // Dwa tryby, rozpoznawane po "Kod towaru" na karcie:
 //  * PRODUKT (maszyna) – kod jest w "produkty" w pliku danych
-//    albo wygląda na numer maszyny Husqvarna (CONFIG.maszynaPoKodzie)
+//    (albo, jeśli włączony, CONFIG.maszynaPoKodzie – domyślnie wyłączony)
 //    -> zakładka "Części zamienne" ze wszystkimi schematami tej maszyny:
 //       /pl/product/<MP>?article=<Kod towaru>
 //  * CZĘŚĆ – każdy inny towar Husqvarna
@@ -30,9 +30,12 @@
         marka:            /husqvarna|hqv|automower/i,           // tryb CZĘŚĆ tylko dla takich nazw
         pokazKarteCzesci: true,
         nazwaZakladki:    'Części zamienne',
-        // Kody maszyn Husqvarna (96xxxxxxx / 97xxxxxxx) -> zakładka bez wpisu w pliku danych.
-        // null wyłącza tryb automatyczny (zostaje tylko lista "produkty").
-        maszynaPoKodzie:  /^9[67]\d{7}$/,
+        // Tryb automatyczny: maszyna po samym Kodzie towaru, bez wpisu w "produkty".
+        // WYŁĄCZONY: katalog nie przyjmuje numeru artykułu zamiast MP_…
+        // (test 01.10.2026: /pl/product/970488401 -> błąd serwera katalogu
+        // .../productinformation/v1/products/970488401). Włączać tylko, jeśli
+        // Husqvarna to zmieni, np.: /^9[67]\d{7}$/
+        maszynaPoKodzie:  null,
         wysokosc:         900,   // px, zanim katalog poda swoją wysokość
         debug:            true
     };

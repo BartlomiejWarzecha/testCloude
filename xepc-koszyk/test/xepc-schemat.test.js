@@ -50,7 +50,11 @@ w = S.zbudujWidoki({ kod: '970541501', nazwa: 'Kosiarka spalinowa Husqvarna LC25
 assert.strictEqual(w.tryb, 'produkt');
 assert.ok(w.widoki[0].url.startsWith('https://xepc-prod.husqvarnagroup.com/pl/product/MP_TEST?article=970541501&domain='));
 
-// PRODUKT bez wpisu: sam Kod towaru maszyny -> /pl/product/<Kod>
+// Tryb automatyczny domyślnie wyłączony: maszyna bez wpisu nie dostaje zakładki z błędem
+assert.strictEqual(S.config.maszynaPoKodzie, null);
+assert.notStrictEqual(S.zbudujWidoki({ kod: '970488401', nazwa: 'Kosiarka Husqvarna', modele: '' }, {}).tryb, 'produkt');
+// Po włączeniu: sam Kod towaru maszyny -> /pl/product/<Kod>
+S.config.maszynaPoKodzie = /^9[67]\d{7}$/;
 w = S.zbudujWidoki({ kod: '970541201', nazwa: 'Kosiarka spalinowa Husqvarna LC253S', modele: '' }, {});
 assert.strictEqual(w.tryb, 'produkt');
 assert.strictEqual(w.widoki[0].url, 'https://xepc-prod.husqvarnagroup.com/pl/product/970541201?domain=https%3A%2F%2Fwww.betkowskiservice.pl%2F');
@@ -58,5 +62,6 @@ assert.strictEqual(w.widoki[0].url, 'https://xepc-prod.husqvarnagroup.com/pl/pro
 assert.strictEqual(S.zbudujWidoki({ kod: '529606802', nazwa: 'Akumulator Husqvarna', modele: '' }, {}).tryb, 'czesc');
 // inna marka z kodem 97... -> nic
 assert.deepStrictEqual(S.zbudujWidoki({ kod: '970000000', nazwa: 'Kosiarka Stiga', modele: '' }, {}).widoki, []);
+S.config.maszynaPoKodzie = null;
 
 console.log('OK');
