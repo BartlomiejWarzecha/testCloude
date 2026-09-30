@@ -21,8 +21,19 @@ Część trafia wtedy do koszyka Twojego sklepu.
   przewijania.
 - **Dodawanie do koszyka.** Skrypt wysyła to samo zapytanie co przyciski sklepu
   (`layout0.min.js`): `$.post(null, {__action:"Cart/Add", __csrf, __parameters:[{productId, quantity}]})`.
-- **ID towaru = `Twr_TwrId`.** Karta 589300801 ma `productId = 48426`. Sprawdź to
-  pierwszym zapytaniem w `mapa-czesci.sql`.
+- **ID towaru w e-Sklepie to NIE jest `Twr_TwrId` z Optimy.** Sklep ma własne
+  ID (`Id`), a numer z Optimy pokazuje osobno jako `GIDNumber`:
+
+  | Numer części | ID w e-Sklepie | GIDNumber (Optima) |
+  |---|---|---|
+  | 589300801 (koło Automower) | 48426 | 49120 |
+  | 578443701 (brzeszczot 255-4) | 3411 | 3411 |
+
+  Czasem te numery się pokrywają, czasem nie. Mapa z `Twr_TwrId` dodałaby więc
+  do koszyka inny towar niż ten, który klient wybrał. Dlatego skrypt pyta o ID
+  wyszukiwarkę sklepu, tę samą co w nagłówku strony (`Get/SearchAutocomplete`).
+  Bierze tylko towar o **identycznym** Kodzie. Nie potrzeba eksportu z SQL,
+  a nowe towary działają od razu po udostępnieniu w sklepie.
 
 ## Czego nie udało się potwierdzić
 
@@ -35,17 +46,14 @@ razie włączone.
 
 ## Wdrożenie
 
-1. **Mapa części.** Uruchom `mapa-czesci.sql` na bazie firmy Optimy. Wynik
-   zapytania 2 (jedna komórka `MapaJson`) zapisz jako
-   `husqvarna-mapa-czesci.json`.
-2. **Wgraj do `/usr/`** w sklepie (tam, gdzie leży już
-   `modeleall26052026.json`): `husqvarna-mapa-czesci.json` i `xepc-koszyk.js`.
-3. **Na podstronie z katalogiem** zamień testowy `<script>` z `console.log('XEPC:'…)`
+1. **Wgraj `xepc-koszyk.js` do `/usr/`** w sklepie (tam, gdzie leży już
+   `modeleall26052026.json`).
+2. **Na podstronie z katalogiem** zamień testowy `<script>` z `console.log('XEPC:'…)`
    na:
    ```html
    <script src="/usr/xepc-koszyk.js"></script>
    ```
-4. **Test.** Otwórz katalog, włącz konsolę (F12), wejdź w schemat i kliknij
+3. **Test.** Otwórz katalog, włącz konsolę (F12), wejdź w schemat i kliknij
    „Dodaj do koszyka”. W konsoli pojawi się `[xepc-koszyk] wiadomość: …`.
    - Część jest w koszyku → gotowe. Ustaw `debug: false`.
    - Wiadomość jest, a koszyk pusty → skopiuj ją i wyślij mi, dopasuję
@@ -53,9 +61,8 @@ razie włączone.
    - Brak wiadomości po kliknięciu → katalog nie wysyła koszyka na tę domenę.
      Zapytaj Husqvarnę o włączenie tej funkcji razem z whitelistą.
 
-Mapę trzeba odświeżać po dodaniu nowych towarów (ponowny eksport z punktu 1).
-Części spoza mapy nie trafią do koszyka. Klient zobaczy komunikat, że części
-nie ma w sklepie.
+Część, której wyszukiwarka nie znajdzie z identycznym Kodem, nie trafi do
+koszyka. Klient zobaczy komunikat, że części nie ma w sklepie.
 
 ## Test lokalny
 

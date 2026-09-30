@@ -7,7 +7,7 @@
 //  2. Skrypt przyjmuje tylko wiadomości z domeny katalogu Husqvarna.
 //  3. Liczba = wysokość treści katalogu -> dopasowujemy wysokość iframe.
 //  4. Inne wiadomości -> szukamy w nich numeru części i ilości,
-//     zamieniamy numer na ID towaru z mapy (/usr/husqvarna-mapa-czesci.json)
+//     wyszukiwarką sklepu zamieniamy numer na ID towaru w e-Sklepie
 //     i dodajemy do koszyka tym samym wywołaniem, którego używa sklep (Cart/Add).
 //
 // Ładować na podstronie z katalogiem (husqvarna_katalog,37), PO skryptach sklepu:
@@ -19,7 +19,6 @@
 
     var CONFIG = {
         xepcOrigin:   'https://xepc-prod.husqvarnagroup.com',
-        mapaUrl:      '/usr/husqvarna-mapa-czesci.json',
         autoWysokosc: true,   // dopasuj wysokość iframe do treści katalogu
         maxIlosc:     99,
         debug:        true    // true -> każda wiadomość z katalogu w konsoli (F12)
@@ -100,29 +99,44 @@
         return Math.min(n, CONFIG.maxIlosc);
     }
 
-    // ── Mapa: numer części -> ID towaru w e-Sklepie ──────────────────────────
-    // Plik z eksportu SQL (mapa-czesci.sql): [{"k":"589300801","id":48426}, ...]
-    var promiseMapy = null;
+    // ── Numer części -> ID towaru w e-Sklepie ────────────────────────────────
+    // ID w e-Sklepie to NIE jest Twr_TwrId z Optimy (to jest GIDNumber):
+    //   589300801: e-Sklep Id 48426, GIDNumber 49120
+    //   578443701: e-Sklep Id 3411,  GIDNumber 3411
+    // Dlatego pytamy wyszukiwarkę sklepu (ta sama co w nagłówku) i bierzemy
+    // tylko towar o identycznym Kodzie. Towar niewidoczny w sklepie = brak.
+    var cacheId = new Map();   // kod -> Promise<Id | null>
 
-    function ladujMape() {
-        if (promiseMapy) return promiseMapy;
-        promiseMapy = fetch(CONFIG.mapaUrl).then(function (res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status + ' @ ' + CONFIG.mapaUrl);
-            return res.json();
-        }).then(function (lista) {
-            var m = new Map();
-            (Array.isArray(lista) ? lista : []).forEach(function (w) {
-                var k = normalizujKod(w.k);
-                if (k && !m.has(k)) m.set(k, Number(w.id));
-            });
-            log('mapa części:', m.size, 'pozycji');
-            return m;
+    function listaProduktow(odp) {
+        var c = odp && odp.collection;
+        if (Array.isArray(c)) return c;
+        if (c && Array.isArray(c['products.Products'])) return c['products.Products'];
+        if (c && Array.isArray(c.Products)) return c.Products;
+        return [];
+    }
+
+    function znajdzIdProduktu(kod) {
+        if (cacheId.has(kod)) return cacheId.get(kod);
+        var p = Promise.resolve(global.$.get(global.location.pathname, {
+            __action: 'Get/SearchAutocomplete',
+            search:   kod
+        })).then(function (odp) {
+            var url = odp && odp.action && odp.action.Result && odp.action.Redirect302;
+            if (!url) return null;
+            return global.$.get(url, { __collection: 'products.Products' });
+        }).then(function (odp) {
+            var trafienie = listaProduktow(odp).filter(function (pr) {
+                return normalizujKod(pr.Code) === kod;
+            })[0];
+            log('szukaj', kod, '->', trafienie ? trafienie.Id : 'brak');
+            return trafienie ? Number(trafienie.Id) : null;
         }).catch(function (e) {
-            console.warn('[xepc-koszyk] mapa:', e.message);
-            promiseMapy = null;   // spróbuj ponownie przy następnym kliknięciu
-            return new Map();
+            console.warn('[xepc-koszyk] wyszukiwanie ' + kod + ':', (e && (e.statusText || e.message)) || e);
+            cacheId.delete(kod);   // błąd sieci -> spróbuj ponownie przy następnym kliknięciu
+            return null;
         });
-        return promiseMapy;
+        cacheId.set(kod, p);
+        return p;
     }
 
     // ── Koszyk (to samo wywołanie co przycisk "Do koszyka" w sklepie) ───────
@@ -158,11 +172,10 @@
     }
 
     function obsluzPozycje(pozycje) {
-        ladujMape().then(function (mapa) {
+        Promise.all(pozycje.map(function (p) { return znajdzIdProduktu(p.kod); })).then(function (idki) {
             var doDodania = [], brak = [];
-            pozycje.forEach(function (p) {
-                var id = mapa.get(p.kod);
-                if (id) doDodania.push({ id: id, ilosc: poprawIlosc(p.ilosc), kod: p.kod });
+            pozycje.forEach(function (p, i) {
+                if (idki[i]) doDodania.push({ id: idki[i], ilosc: poprawIlosc(p.ilosc), kod: p.kod });
                 else brak.push(p.kod);
             });
             log('do koszyka:', doDodania, 'brak w sklepie:', brak);
@@ -207,14 +220,13 @@
 
     if (typeof window !== 'undefined' && window.addEventListener) {
         window.addEventListener('message', naWiadomosc);
-        ladujMape();   // pobierz mapę zawczasu, żeby pierwsze kliknięcie było szybkie
     }
 
     global.XepcKoszyk = {
         config:           CONFIG,
         normalizujKod:    normalizujKod,
         wyciagnijPozycje: wyciagnijPozycje,
-        ladujMape:        ladujMape
+        znajdzIdProduktu: znajdzIdProduktu
     };
 
 })(typeof window !== 'undefined' ? window : globalThis);
