@@ -44,9 +44,9 @@
     }
 
     // ── Odczyt wiadomości z katalogu ─────────────────────────────────────────
-    // Format wiadomości "dodaj do koszyka" nie jest publicznie opisany,
-    // więc szukamy numeru i ilości po typowych nazwach pól, także w
-    // zagnieżdżonych obiektach ({type, payload}, {items: [...]} itp.).
+    // Katalog wysyła tekst "addToCart:<numer>$<ilość>". Na wypadek zmiany
+    // formatu rozpoznajemy też typowe nazwy pól w obiektach/JSON
+    // ({partNumber, qty}, {type, payload}, {items: [...]} itp.).
     // Najpierw pola jednoznaczne (partNumber, articleNo...), dopiero potem ogólne (id, code).
     var KLUCZE_KODU = [
         /^(part|article|product|item|spare)_?(no|nr|number|numer|code|kod)$|sku/i,
@@ -59,6 +59,13 @@
         if (glebokosc > 5 || data === null || data === undefined) return [];
 
         if (typeof data === 'string') {
+            // Format xEPC (sprawdzony 30.09.2026): "addToCart:547208801$1" = numer$ilość
+            var xepc = /addToCart:([^$\s]+)\$(\d+(?:[.,]\d+)?)/gi, m, wynik = [];
+            while ((m = xepc.exec(data)) !== null) {
+                if (wygladaNaKod(m[1])) wynik.push({ kod: normalizujKod(m[1]), ilosc: parseFloat(m[2].replace(',', '.')) });
+            }
+            if (wynik.length) return wynik;
+
             if (/^\s*[\[{]/.test(data)) {
                 try { return wyciagnijPozycje(JSON.parse(data), glebokosc + 1); } catch (e) { /* zwykły tekst */ }
             }

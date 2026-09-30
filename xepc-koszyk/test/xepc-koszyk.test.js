@@ -40,7 +40,12 @@ X.config.debug = false;
 // Numery części
 assert.strictEqual(X.normalizujKod('589 30 08-01'), '589300801');
 
-// Różne możliwe kształty wiadomości
+// Prawdziwy format z katalogu (konsola, 30.09.2026)
+assert.deepStrictEqual(X.wyciagnijPozycje('addToCart:547208801$1'), [{ kod: '547208801', ilosc: 1 }]);
+assert.deepStrictEqual(X.wyciagnijPozycje('addToCart:589300801$3'), [{ kod: '589300801', ilosc: 3 }]);
+assert.deepStrictEqual(X.wyciagnijPozycje('addToCart:abc$1'), []);
+
+// Inne możliwe kształty wiadomości
 const ok = [{ kod: '589300801', ilosc: 2 }];
 assert.deepStrictEqual(X.wyciagnijPozycje({ partNumber: '589 30 08-01', quantity: 2 }), ok);
 assert.deepStrictEqual(X.wyciagnijPozycje(JSON.stringify({ type: 'addToCart', payload: { articleNo: '589300801', qty: '2' } })), ok);
@@ -68,8 +73,12 @@ const send = (origin, data) => listeners.forEach(fn => fn({ origin, data, source
     // Dodanie do koszyka + część, której nie ma w sklepie
     send(X.config.xepcOrigin, { items: [{ partNumber: '589 30 08-01', quantity: 3 }, { partNumber: '578443701' }, { partNumber: '999999999' }] });
     await new Promise(r => setTimeout(r, 20));
+    // Wiadomość w formacie katalogu -> Cart/Add
+    send(X.config.xepcOrigin, 'addToCart:589300801$2');
+    await new Promise(r => setTimeout(r, 20));
+    assert.strictEqual(posted.length, 2);
+    assert.deepStrictEqual(JSON.parse(posted[1].__parameters), [{ productId: '48426', quantity: '2' }]);
 
-    assert.strictEqual(posted.length, 1);
     assert.strictEqual(posted[0].__action, 'Cart/Add');
     assert.strictEqual(posted[0].__csrf, 'csrf-token');
     assert.deepStrictEqual(JSON.parse(posted[0].__parameters), [{ productId: '48426', quantity: '3' }, { productId: '3411', quantity: '1' }]);
