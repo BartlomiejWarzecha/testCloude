@@ -129,4 +129,14 @@ S.config.kartaCzesciBezSchematu = true;
 assert.deepStrictEqual(etykiety(S.zbudujWidoki({ kod: '501879706', nazwa: 'Filtr Husqvarna', modele: '' }, {})), ['Karta części 501879706']);
 S.config.kartaCzesciBezSchematu = false;
 
+// Kolejność: tytuł -> opis
+const sl2 = { nazwy: { LC353VE: { nazwa: 'LC 353VE', mp: 'MP_A', article: '1' }, LC247S: { nazwa: 'LC 247S', mp: 'MP_B', article: '2' } } };
+w = S.zbudujWidoki({ kod: '501000001', nazwa: 'Filtr Husqvarna LC353VE', modele: '', opis: 'Pasuje też do LC 247S' }, sl2);
+assert.deepStrictEqual(etykiety(w).filter(x => x.startsWith('Schemat')), ['Schemat: LC 353VE']);   // tytuł wygrywa, opis pominięty
+assert.strictEqual(w.zrodlo, 'tytuł');
+w = S.zbudujWidoki({ kod: '501000001', nazwa: 'Filtr powietrza Husqvarna 501000001', modele: '', opis: 'Pasuje do modeli: LC 247S, LC 353VE' }, sl2);
+assert.deepStrictEqual(etykiety(w).filter(x => x.startsWith('Schemat')), ['Schemat: LC 247S', 'Schemat: LC 353VE']);
+assert.strictEqual(w.zrodlo, 'opis');
+assert.deepStrictEqual(S.zbudujWidoki({ kod: '501000001', nazwa: 'Filtr Husqvarna', modele: '', opis: '' }, sl2).widoki, []);
+
 console.log('OK');

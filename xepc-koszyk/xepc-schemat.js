@@ -8,8 +8,8 @@
 //    -> zakładka "Części zamienne" ze wszystkimi schematami tej maszyny:
 //       /pl/product/<MP>?article=<Kod towaru>
 //  * CZĘŚĆ – każdy inny towar Husqvarna
-//    -> schematy modeli z listy "modele", których nazwa pasuje do tytułu
-//       lub atrybutu "Modele Husqvarna:" (np. bateria 430X 440 450X 550)
+//    -> schematy modeli z listy "modele" i słownika "nazwy", których nazwa pasuje
+//       do tytułu lub atrybutu "Modele Husqvarna:", a gdy tam nic – do opisu produktu
 //    -> oraz karta części Husqvarna: /pl/part/<Kod towaru>
 //  * WYSZUKIWANIE – fraza o Husqvarnie (np. "LC 140P", "husqvarna")
 //    -> panel nad wynikami: schematy pasujących modeli + katalog Husqvarna
@@ -45,6 +45,7 @@
         wzorMaszyny:      /^9\d{8}$/,
         maxModeliWyszukiwania: 6,   // ile przycisków modeli (część / wyszukiwanie)
         panelWyszukiwania: false,   // panel nad wynikami wyszukiwania/kategorii – WYŁĄCZONY
+        czekajNaOpisMs:   4000,     // ile czekać na doczytanie opisu produktu
         wysokosc:         900,   // px, zanim katalog poda swoją wysokość
         debug:            true
     };
@@ -123,11 +124,17 @@
         if (!kod || jestMaszyna || !CONFIG.marka.test(karta.nazwa || '')) return { tryb: null, widoki: [] };
 
         // Modele z listy "modele" + ze słownika "nazwy" (husqvarna.com), np. "LC 353VE".
-        var tekst = [karta.nazwa, karta.modele].join(' ');
-        var modele = [], byly = {};
-        dopasujModele(tekst, dane.modele).concat(modeleZeSlownika(tekst, dane.nazwy, true)).forEach(function (m) {
-            if (!byly[m.mp]) { byly[m.mp] = true; modele.push(m); }
-        });
+        // Kolejność: 1) tytuł + atrybuty karty, 2) opis produktu – tylko gdy 1) nic nie dał.
+        function modeleZ(tekst) {
+            var wynik = [], byly = {};
+            dopasujModele(tekst, dane.modele).concat(modeleZeSlownika(tekst, dane.nazwy, true)).forEach(function (m) {
+                if (!byly[m.mp]) { byly[m.mp] = true; wynik.push(m); }
+            });
+            return wynik;
+        }
+        var zrodlo = 'tytuł';
+        var modele = modeleZ([karta.nazwa, karta.modele].join(' '));
+        if (!modele.length && karta.opis) { modele = modeleZ(karta.opis); zrodlo = 'opis'; }
         var widoki = modele.slice(0, CONFIG.maxModeliWyszukiwania).map(function (m) {
             return { etykieta: 'Schemat: ' + m.nazwa, url: urlProduktu(m.mp, m.article) };
         });
@@ -136,7 +143,7 @@
         if (CONFIG.pokazKarteCzesci) {
             widoki.push({ etykieta: 'Karta części ' + kod, url: urlCzesci(kod) });
         }
-        return { tryb: 'czesc', widoki: widoki };
+        return { tryb: 'czesc', widoki: widoki, zrodlo: modele.length ? zrodlo : null };
     }
 
     // ── Odczyt karty produktu (Comarch e-Sklep) ──────────────────────────────
@@ -149,8 +156,23 @@
         return {
             kod:    tekstZ('.code-value .value'),
             nazwa:  tekstZ('.js-product-details__name') || tekstZ('h1'),
-            modele: tekstZ('.productDetails-attributes')   // m.in. "Modele Husqvarna: ..."
+            modele: tekstZ('.productDetails-attributes'),   // m.in. "Modele Husqvarna: ..."
+            opis:   tekstZ('.productDetails-content--descriptionText') || tekstZ('.product-mobile-description')
         };
+    }
+
+    // Opis bywa doczytywany po załadowaniu strony – czekamy na niego do CONFIG.czekajNaOpisMs.
+    function czekajNaOpis(karta) {
+        return new Promise(function (gotowe) {
+            if (karta.opis || !global.MutationObserver) return gotowe(karta);
+            var koniec = setTimeout(zakoncz, CONFIG.czekajNaOpisMs);
+            var obs = new global.MutationObserver(function () {
+                var opis = tekstZ('.productDetails-content--descriptionText') || tekstZ('.product-mobile-description');
+                if (opis) { karta.opis = opis; zakoncz(); }
+            });
+            obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+            function zakoncz() { clearTimeout(koniec); obs.disconnect(); gotowe(karta); }
+        });
     }
 
     // ── Wstawienie na kartę ──────────────────────────────────────────────────
@@ -433,7 +455,8 @@
             return;
         }
 
-        ladujDane().then(function (dane) {
+        Promise.all([ladujDane(), czekajNaOpis(karta)]).then(function (w) {
+            var dane = w[0];
             var wynik = zbudujWidoki(karta, dane);
             log(karta, wynik);
             if (!wynik.widoki.length) return;

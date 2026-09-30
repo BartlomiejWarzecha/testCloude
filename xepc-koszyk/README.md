@@ -95,7 +95,7 @@ dla części i osobno dla maszyn. Tryb wybiera sam, po „Kod towaru”:
 
 | Tryb | Kiedy | Co pokazuje |
 |---|---|---|
-| **Część** | nazwa zawiera Husqvarna/HQV/Automower i jest schemat modelu | zakładka **„Schemat części”**: schemat każdego modelu z listy `modele` i ze słownika `nazwy` (391 modeli z husqvarna.com), który pasuje do tytułu lub atrybutu „Modele Husqvarna:”, + „Karta części” (`/pl/part/<Kod>`). Bez żadnego schematu zakładki nie ma (`kartaCzesciBezSchematu: false`) |
+| **Część** | nazwa zawiera Husqvarna/HQV/Automower i jest schemat modelu | zakładka **„Schemat części”**: schemat każdego modelu z listy `modele` i ze słownika `nazwy` (391 modeli z husqvarna.com), który pasuje do tytułu lub atrybutu „Modele Husqvarna:”, a gdy tam nic nie ma – do opisu produktu (skrypt czeka do 4 s na doczytanie opisu), + „Karta części” (`/pl/part/<Kod>`). Bez żadnego schematu zakładki nie ma (`kartaCzesciBezSchematu: false`) |
 | **Wyszukiwanie** | fraza/wyniki dotyczą Husqvarny, np. `LC 140P`, `husqvarna` | panel nad wynikami: przyciski schematów modeli z frazy i maszyn z wyników + „Katalog części Husqvarna”; katalog otwiera się po kliknięciu |
 | **Produkt** (maszyna) | „Kod towaru” jest w `produkty` | zakładka **„Części zamienne”** (obok Opis / Identyfikatory / Opinie) ze wszystkimi schematami tej maszyny; katalog ładuje się dopiero po kliknięciu zakładki |
 
