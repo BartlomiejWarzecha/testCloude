@@ -11,7 +11,13 @@
 //    (sessionStorage „bs-kiosk-producent”), dane kategorii też
 //    (localStorage „bs-kiosk-producent-dane”).
 //
-// Ładować w szablonie całego sklepu (na innych stronach nic nie robi):
+// 3. Pozostałe strony na komputerze (lista kategorii, karta produktu, strony
+//    informacyjne): pasek pod okruszkami. Na liście kategorii przełącza
+//    producenta w bieżącej kategorii i ukrywa producentów bez produktów w niej;
+//    gdzie indziej prowadzi do /produkty,2 z wybranym producentem. Bez paska
+//    w koszyku, zamówieniu, na koncie i przy logowaniu.
+//
+// Ładować w szablonie całego sklepu:
 //   <script src="/usr/pasek-producentow.js"></script>
 //
 // Logo: pliki z folderu logo/ (pasek-logo-*.png/.jpg) wgraj do /usr/.
@@ -97,6 +103,8 @@
         '.pasek-prod--miesci .pasek-prod__okno::after,.pasek-prod--koniec .pasek-prod__okno::after{display:none}' +
         // strona kategorii
         '.pasek-prod-kat{margin:0 0 20px;font-family:Poppins,sans-serif}' +
+        '.pasek-prod-strona{padding:14px 0;border-bottom:1px solid #e6e8ec}.pasek-prod-strona .pasek-prod{margin:0}' +
+        '.pasek-prod__lista li[hidden]{display:none}' +
         '.pasek-prod-kat .pasek-prod{margin:0}' +
         '.pasek-prod__info{margin:10px 0 0;font-size:14px;color:#4a5263;line-height:1.5;text-align:left}' +
         '.pasek-prod__info b{color:#1d2433}' +
@@ -109,7 +117,7 @@
             '.pasek-prod__tytul,.pasek-prod__strzalka{display:none}' +
             '.pasek-prod__link{height:36px;padding:0 12px;font-size:13px}' +
             '.pasek-prod__link img{max-height:22px;max-width:90px}' +
-            '.pasek-prod-kat{margin-bottom:14px}.pasek-prod-kat .pasek-prod{padding:0}' +
+            '.pasek-prod-kat{margin-bottom:14px}.pasek-prod-kat .pasek-prod{padding:0}.pasek-prod-strona{display:none}' +
             '.pasek-prod__info{font-size:13px}.pasek-prod__info a{display:inline-block;margin:4px 12px 0 0}}';
 
     // ── Wspólne ──────────────────────────────────────────────────────────────
@@ -135,15 +143,18 @@
         document.head.appendChild(st);
     }
 
-    // lista: producenci; naKlik(p, e) – opcjonalnie (strona kategorii), p = null to „Wszyscy”
-    function zbuduj(lista, naKlik) {
+    // lista: producenci; naKlik(p, a) – opcjonalnie (strona kategorii), p = null to „Wszyscy”.
+    // opcje (inne strony): adres(p) – link przycisku, wszyscy – przycisk „Wszyscy”,
+    // tytul, strona – nazwa strony do GA4, przed(p) – przed przejściem pod link
+    function zbuduj(lista, naKlik, opcje) {
+        opcje = opcje || {};
         var pasek = document.createElement('nav');
         pasek.className = 'pasek-prod';
         pasek.setAttribute('aria-label', TYTUL);
 
         var tytul = document.createElement('span');
         tytul.className = 'pasek-prod__tytul';
-        tytul.textContent = (naKlik ? 'Producent' : TYTUL) + ':';
+        tytul.textContent = (opcje.tytul || (naKlik ? 'Producent' : TYTUL)) + ':';
 
         var okno = document.createElement('div');
         okno.className = 'pasek-prod__okno';
@@ -154,8 +165,9 @@
             var li = document.createElement('li');
             var a = document.createElement('a');
             a.className = 'pasek-prod__link';
-            a.href = STRONA_KATEGORII + (p ? '#' + filtr(p) : '');
+            a.href = opcje.adres ? opcje.adres(p) : STRONA_KATEGORII + (p ? '#' + filtr(p) : '');
             a.setAttribute('data-f', p ? filtr(p) : '');
+            li.setAttribute('data-f', p ? filtr(p) : '');
             if (p && p.logo) {
                 var img = document.createElement('img');
                 img.alt = p.nazwa; img.title = p.nazwa; img.loading = 'lazy';
@@ -169,12 +181,13 @@
             }
             a.addEventListener('click', function (e) {
                 if (naKlik) { e.preventDefault(); naKlik(p, a); return; }
-                ga4('producer_bar_click', { producer: p.nazwa, page: 'glowna' });
+                ga4('producer_bar_click', { producer: p ? p.nazwa : 'wszyscy', page: opcje.strona || 'glowna' });
+                if (opcje.przed) opcje.przed(p);
             });
             li.appendChild(a);
             ul.appendChild(li);
         }
-        if (naKlik) dodaj(null);
+        if (naKlik || opcje.wszyscy) dodaj(null);
         lista.forEach(dodaj);
         okno.appendChild(ul);
 
@@ -220,7 +233,7 @@
         pasek.appendChild(lewa);
         pasek.appendChild(okno);
         pasek.appendChild(prawa);
-        return { el: pasek, odswiez: odswiezStrzalki, zaznacz: zaznacz };
+        return { el: pasek, lista: ul, odswiez: odswiezStrzalki, zaznacz: zaznacz };
     }
 
     // ── 1. Strona główna ─────────────────────────────────────────────────────
@@ -476,11 +489,101 @@
     }
     // wybór zapamiętany dla menu sklepu (producent) i dla tej strony (marka); adres do udostępnienia
     function zapamietaj(p) {
+        zapamietajWybor(p);
+        try { history.replaceState(history.state, '', location.pathname + location.search + (p ? '#' + filtr(p) : '')); } catch (e) {}
+    }
+
+    // ── 3. Inne strony (tylko komputer) ──────────────────────────────────────
+    // Pasek pod okruszkami. Na liście kategorii przełącza producenta w bieżącej
+    // kategorii (producenci bez produktów w niej są ukryci), na pozostałych
+    // stronach prowadzi do /produkty,2 z wybranym producentem.
+    // Bez paska: koszyk/zamówienie (4), rejestracja (5), konto (6),
+    // konfiguracja (8), logowanie (32).
+    var BEZ_PASKA = ['4', '5', '6', '8', '32'];
+    var MQ = window.matchMedia ? window.matchMedia('(min-width: 769px)') : null;
+    function naKomputerze() { return MQ ? MQ.matches : window.innerWidth > 768; }
+    function typStrony() { return (location.pathname.match(/,(\d+)(?:,|\/|$)/) || [])[1] || ''; }
+    // filtr producenta/marki zapisany w adresie (sklep wstawia go w różne miejsca ścieżki)
+    function filtrZAdresu() {
+        var f = location.pathname.split('/').filter(function (x) { return /^(producent|marka)=[^/]+$/.test(x); })[0];
+        return f ? decodeURIComponent(f) : '';
+    }
+
+    function startStrona() {
+        var typ = typStrony();
+        if (BEZ_PASKA.indexOf(typ) >= 0) return;
+        var okruszki = document.querySelector('main section.breadcrumbs-wrapper');
+        if (!okruszki) return;
+        dodajCss();
+        // lista kategorii (adres z id kategorii, np. /produkty/koszenie,2,39165) – bez wyszukiwania
+        var kategoria = typ === '2' && katId(location.pathname) && !/[?&](search|seaAtc)=/i.test(location.search);
+        var biezacy = kategoria ? filtrZAdresu() : '';
+        var lista = PRODUCENCI.slice();
+        if (biezacy && !lista.some(function (x) { return filtr(x) === biezacy; })) {
+            var obcy = znajdz(biezacy);
+            if (obcy) lista.unshift(obcy);
+        }
+        var bezFiltra = '/' + sciezka(location.pathname);
+        var pasek = zbuduj(lista, null, kategoria ? {
+            tytul: 'Producent', wszyscy: true, strona: 'kategoria',
+            adres: function (p) { return p ? '/' + filtr(p) + bezFiltra : bezFiltra; },
+            przed: zapamietajWybor
+        } : { strona: 'inna' });
+
+        var sekcja = document.createElement('section');
+        sekcja.className = 'pasek-prod-strona';
+        var srodek = document.createElement('div');
+        srodek.className = 'page-padding';
+        srodek.appendChild(pasek.el);
+        sekcja.appendChild(srodek);
+        okruszki.parentNode.insertBefore(sekcja, okruszki.nextSibling);
+        // lewa krawędź jak okruszki, szerokość jak treść strony (np. 1400 px przy szerokim oknie)
+        function dopasuj() {
+            var ul = okruszki.querySelector('.breadcrumbs') || okruszki;
+            var siatka = document.querySelector('main .gridContainer');
+            var r = ul.getBoundingClientRect(), s = srodek.getBoundingClientRect();
+            var lewo = r.left, szer = window.innerWidth - 2 * r.left;
+            if (siatka) { var g = siatka.getBoundingClientRect(); if (g.width > 200 && g.width < szer) szer = g.width; }
+            pasek.el.style.marginLeft = Math.max(0, Math.round(lewo - s.left)) + 'px';
+            pasek.el.style.width = Math.round(szer) + 'px';
+            pasek.odswiez();
+        }
+        srodek.style.padding = '0';
+        dopasuj();
+        window.addEventListener('resize', dopasuj);
+        window.addEventListener('load', dopasuj);
+        if (!kategoria) return;
+        pasek.zaznacz(biezacy);
+
+        // producenci bez produktów w tej kategorii znikają z paska (dane jak w menu sklepu,
+        // pamiętane 12 h); liczby idą do podpowiedzi przycisku
+        pamiec = wczytajPamiec();
+        var kolejka = lista.filter(function (p) { return filtr(p) !== biezacy; }), aktywne = 0;
+        function dalej() {
+            while (aktywne < 6 && kolejka.length) {
+                (function (p) {
+                    aktywne++;
+                    daneKategorii(p, location.pathname).then(function (w) {
+                        aktywne--;
+                        var li = pasek.lista.querySelector('li[data-f="' + filtr(p) + '"]');
+                        if (li && w) {
+                            if (!w.n) li.hidden = true;
+                            else li.firstChild.title = p.nazwa + ' (' + produktow(w.n) + ')';
+                        }
+                        pasek.odswiez();
+                        dalej();
+                    });
+                })(kolejka.shift());
+            }
+        }
+        dalej();
+    }
+    // wybór producenta z paska zapamiętany dla menu sklepu i strony /produkty,2 (bez zmiany adresu)
+    function zapamietajWybor(p) {
         try {
             sessionStorage.setItem(KLUCZ_PROD, p && !p.marka ? JSON.stringify({ n: p.nazwa, s: p.s }) : '');
             if (p && p.marka) sessionStorage.setItem(KLUCZ_MARKA, p.marka); else sessionStorage.removeItem(KLUCZ_MARKA);
         } catch (e) {}
-        try { history.replaceState(history.state, '', location.pathname + location.search + (p ? '#' + filtr(p) : '')); } catch (e) {}
     }
 
     // ── Start ────────────────────────────────────────────────────────────────
@@ -491,8 +594,9 @@
         // strona kategorii: kafelki kategorii głównych na /produkty,2 (bez filtra w adresie)
         if (/^\/produkty,2\/?$/.test(location.pathname)) {
             var wrap = document.querySelector('.product-list__categories-wrapper');
-            if (wrap) startKategorie(wrap);
+            if (wrap) { startKategorie(wrap); return; }
         }
+        if (naKomputerze()) startStrona();
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
