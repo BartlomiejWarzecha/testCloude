@@ -1,7 +1,7 @@
 // =============================================================================
 // LINK DO KOSZYKA  (koszyk-link.js)
-// 1. Strona koszyka: przycisk „Udostępnij koszyk” tworzy link z produktami
-//    i ilościami (do skopiowania, wysłania e-mailem albo przez telefon).
+// 1. Strona koszyka: przycisk „Kopiuj link do koszyka” kopiuje do schowka link
+//    z produktami i ilościami.
 // 2. Otwarcie linku: produkty trafiają do koszyka osoby, która go otworzyła
 //    (dopisują się do tego, co już ma), potem otwiera się koszyk.
 //
@@ -24,21 +24,11 @@
     var MAX_ILOSC = 9999;
     var KLUCZ_ZROBIONE = 'bs-koszyk-link-dodany';
 
+    var NAPIS = 'Kopiuj link do koszyka';
     var CSS =
-        '.koszyk-link{margin:16px 0;padding:14px 16px;border:1px solid #dcdfe4;border-radius:8px;background:#fff;' +
-            'font-family:Poppins,sans-serif;font-size:14px;color:#1d2433}' +
-        '.koszyk-link__przycisk{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid #22355c;' +
-            'border-radius:8px;background:#fff;color:#22355c;font-weight:600;font-size:14px;cursor:pointer}' +
-        '.koszyk-link__przycisk:hover{background:#eef2f8}' +
-        '.koszyk-link__opis{margin:8px 0 0;font-size:12px;color:#6b7280;line-height:1.4}' +
-        '.koszyk-link__wynik{margin-top:12px}' +
-        '.koszyk-link__pole{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #dcdfe4;border-radius:6px;' +
-            'font-size:13px;color:#1d2433;background:#f6f7f8}' +
-        '.koszyk-link__akcje{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}' +
-        '.koszyk-link__akcje a,.koszyk-link__akcje button{padding:8px 12px;border:1px solid #dcdfe4;border-radius:6px;' +
-            'background:#fff;color:#1d2433;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}' +
-        '.koszyk-link__akcje a:hover,.koszyk-link__akcje button:hover{border-color:#22355c;color:#22355c}' +
-        '.koszyk-link__blad{color:#b42318;font-size:13px;margin-top:8px}';
+        '.koszyk-link{display:block;width:100%;margin:12px 0;padding:10px 14px;border:1px solid #22355c;border-radius:8px;' +
+            'background:#fff;color:#22355c;font-family:Poppins,sans-serif;font-size:14px;font-weight:600;cursor:pointer}' +
+        '.koszyk-link:hover{background:#eef2f8}.koszyk-link[disabled]{opacity:.6;cursor:default}';
 
     function log() { try { console.info.apply(console, ['[koszyk-link]'].concat([].slice.call(arguments))); } catch (e) {} }
     function produktow(n) {
@@ -114,85 +104,51 @@
         // pusty koszyk – bez przycisku
         if (!document.querySelector('.js-product, .cart__list-item--products')) return;
 
-        var box = document.createElement('div');
-        box.className = 'koszyk-link';
         var b = document.createElement('button');
         b.type = 'button';
-        b.className = 'koszyk-link__przycisk';
-        b.textContent = '🔗 Udostępnij koszyk';
-        var opis = document.createElement('p');
-        opis.className = 'koszyk-link__opis';
-        opis.textContent = 'Link z produktami i ilościami z tego koszyka – do wysłania np. znajomemu albo do nas. ' +
-            'Ceny są aktualne w chwili otwarcia linku.';
-        var wynik = document.createElement('div');
-        wynik.className = 'koszyk-link__wynik';
-        box.appendChild(b);
-        box.appendChild(opis);
-        box.appendChild(wynik);
+        b.className = 'koszyk-link';
+        b.textContent = NAPIS;
         // na końcu podsumowania (pod przyciskiem zamówienia), a bez niego – pod koszykiem
-        (cel || kont).appendChild(box);
+        (cel || kont).appendChild(b);
 
         b.addEventListener('click', function () {
             b.disabled = true;
-            wynik.textContent = 'Tworzę link…';
             pozycjeKoszyka().then(function (pozycje) {
-                b.disabled = false;
-                wynik.textContent = '';
-                if (!pozycje.length) { blad(wynik, 'Nie udało się odczytać produktów z koszyka.'); return; }
-                pokazLink(wynik, zbudujLink(pozycje), pozycje.length);
-                if (typeof window.ga4Wyslij === 'function') try { window.ga4Wyslij('cart_link_create', { items: pozycje.length }); } catch (e) {}
-            }, function (e) {
-                b.disabled = false;
-                wynik.textContent = '';
-                blad(wynik, 'Nie udało się utworzyć linku. Spróbuj ponownie.');
+                if (!pozycje.length) throw new Error('brak pozycji');
+                var link = zbudujLink(pozycje);
+                return kopiuj(link).then(function () {
+                    napis(b, 'Skopiowano ✓');
+                    if (typeof window.ga4Wyslij === 'function') try { window.ga4Wyslij('cart_link_copy', { items: pozycje.length }); } catch (e) {}
+                }, function () {
+                    // schowek zablokowany – link do ręcznego skopiowania
+                    window.prompt('Skopiuj link do koszyka:', link);
+                    napis(b, NAPIS);
+                });
+            }).catch(function (e) {
                 log('błąd', e);
+                napis(b, 'Nie udało się – spróbuj ponownie');
             });
         });
     }
-    function blad(gdzie, tekst) {
-        var e = document.createElement('div');
-        e.className = 'koszyk-link__blad';
-        e.textContent = tekst;
-        gdzie.appendChild(e);
+    function napis(b, t) {
+        b.disabled = false;
+        b.textContent = t;
+        clearTimeout(b.__t);
+        if (t !== NAPIS) b.__t = setTimeout(function () { b.textContent = NAPIS; }, 2500);
     }
-    function pokazLink(gdzie, link, ile) {
-        var pole = document.createElement('input');
-        pole.className = 'koszyk-link__pole';
-        pole.readOnly = true;
-        pole.value = link;
-        pole.setAttribute('aria-label', 'Link do koszyka');
-        pole.addEventListener('focus', function () { pole.select(); });
-        var akcje = document.createElement('div');
-        akcje.className = 'koszyk-link__akcje';
-
-        var kopiuj = document.createElement('button');
-        kopiuj.type = 'button';
-        kopiuj.textContent = 'Kopiuj link';
-        kopiuj.addEventListener('click', function () {
-            function ok() { kopiuj.textContent = 'Skopiowano ✓'; setTimeout(function () { kopiuj.textContent = 'Kopiuj link'; }, 2500); }
-            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(ok, function () { pole.select(); document.execCommand('copy'); ok(); });
-            else { pole.select(); document.execCommand('copy'); ok(); }
+    function kopiuj(tekst) {
+        if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(tekst);
+        return new Promise(function (ok, nie) {
+            var t = document.createElement('textarea');
+            t.value = tekst;
+            t.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+            document.body.appendChild(t);
+            t.select();
+            var udane = false;
+            try { udane = document.execCommand('copy'); } catch (e) {}
+            t.remove();
+            if (udane) ok(); else nie();
         });
-        akcje.appendChild(kopiuj);
-
-        var mail = document.createElement('a');
-        mail.textContent = 'Wyślij e-mailem';
-        mail.href = 'mailto:?subject=' + encodeURIComponent('Koszyk – Bętkowski Service') +
-            '&body=' + encodeURIComponent('Produkty w koszyku (' + ile + ' poz.): ' + link);
-        akcje.appendChild(mail);
-
-        if (navigator.share) {
-            var dziel = document.createElement('button');
-            dziel.type = 'button';
-            dziel.textContent = 'Udostępnij…';
-            dziel.addEventListener('click', function () {
-                navigator.share({ title: 'Koszyk – Bętkowski Service', url: link }).catch(function () {});
-            });
-            akcje.appendChild(dziel);
-        }
-        gdzie.appendChild(pole);
-        gdzie.appendChild(akcje);
-        pole.focus();
     }
 
     // ── 2. Otwarcie linku: produkty do koszyka ───────────────────────────────
