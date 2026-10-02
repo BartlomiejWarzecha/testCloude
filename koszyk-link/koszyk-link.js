@@ -17,6 +17,9 @@
 
 (function () {
     'use strict';
+    // skrypt wczytany dwa razy (np. w szablonie i na podstronie) dodałby produkty podwójnie
+    if (window.__bsKoszykLink) return;
+    window.__bsKoszykLink = true;
 
     var STRONA_KOSZYKA = '/zamowienie,4';
     var PARAMETR = 'koszyk';
@@ -31,10 +34,6 @@
         '.koszyk-link:hover{background:#eef2f8}.koszyk-link[disabled]{opacity:.6;cursor:default}';
 
     function log() { try { console.info.apply(console, ['[koszyk-link]'].concat([].slice.call(arguments))); } catch (e) {} }
-    function produktow(n) {
-        var d = n % 10, s = n % 100;
-        return n + (n === 1 ? ' produkt' : (d >= 2 && d <= 4 && (s < 12 || s > 14)) ? ' produkty' : ' produktów');
-    }
     function kodNorm(v) { return String(v == null ? '' : v).toUpperCase().replace(/[\s.\-\/]/g, ''); }
     function naKoszyku() { return /(^|\/)zamowienie,4/.test(location.pathname); }
     function popup(tekst, typ, czas) {
@@ -213,13 +212,11 @@
         try {
             if (sessionStorage.getItem(KLUCZ_ZROBIONE) === dane.surowy) {
                 usunZAdresu();
-                popup('Produkty z tego linku są już w koszyku.', 'info', 3500);
                 return;
             }
         } catch (e) {}
         if (!pozycje.length) { usunZAdresu(); return; }
         if (!window.$ || !window.__CSRF) { log('brak jQuery/__CSRF – nie dodaję'); return; }
-        popup('Dodaję do koszyka produkty z linku (' + pozycje.length + ')…', 'info', 3000);
 
         Promise.all(pozycje.map(function (poz) {
             return znajdz(poz.kod).then(function (pr) {
@@ -252,19 +249,19 @@
                 }) : Promise.resolve([]);
             return dodaj.then(function (ok) {
                 try { sessionStorage.setItem(KLUCZ_ZROBIONE, dane.surowy); } catch (e) {}
+                // bez komunikatu o dodaniu – tylko gdy czegoś nie dało się dodać
                 var tekst = [];
-                if (ok.length) tekst.push('Dodano do koszyka: ' + produktow(ok.length) + '.');
                 if (brak.length) tekst.push('Nie ma w sklepie: ' + brak.join(', ') + '.');
                 if (wybor.length) tekst.push('Wybierz wariant na karcie produktu: ' + wybor.map(function (w) { return w.pr.nazwa; }).join(', ') + '.');
                 if (nieudane.length) tekst.push('Nie udało się dodać: ' + nieudane.join(', ') + '.');
-                popup(tekst.join('<br>') || 'Brak produktów do dodania.', ok.length ? 'success' : 'info', 4500);
+                if (tekst.length) popup(tekst.join('<br>'), 'info', 4500);
                 if (typeof window.ga4Wyslij === 'function') try { window.ga4Wyslij('cart_link_open', { items: pozycje.length, added: ok.length }); } catch (e) {}
                 usunZAdresu();
                 // koszyk pokazuje nowe produkty po wczytaniu strony
                 setTimeout(function () {
                     if (naKoszyku()) location.reload();
                     else if (ok.length) location.assign(STRONA_KOSZYKA);
-                }, wybor.length || brak.length || nieudane.length ? 5000 : 2000);
+                }, tekst.length ? 5000 : 0);
             });
         });
     }
