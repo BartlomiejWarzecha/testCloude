@@ -98,49 +98,87 @@
         return j;
     }
 
+    // ── Teksty w języku klienta ──────────────────────────────────────────────
+    // Tłumacz strony nie tłumaczy tekstu dopisanego po wczytaniu, więc opisy mamy gotowe.
+    // kr – krótki dopisek na liście, cena – przy kwocie na karcie, info – pod nią,
+    // nota – pod kwotą do zapłaty w koszyku. {d} = data kursu, {k} = kurs. Inne języki: angielski.
+    var T = {
+        en: { kr: 'indicative', cena: 'indicative price', info: 'Converted at the NBP average exchange rate of {d} (1 EUR = {k} PLN). Sale price and payment in PLN; the euro amount is for information only.', nota: 'Euro amounts are indicative, converted at the NBP average exchange rate of {d} (1 EUR = {k} PLN). Sale price and payment in PLN.' },
+        de: { kr: 'Richtwert', cena: 'unverbindlicher Richtwert', info: 'Umgerechnet zum NBP-Mittelkurs vom {d} (1 EUR = {k} PLN). Verkaufspreis und Zahlung in PLN; der Euro-Betrag dient nur zur Information.', nota: 'Euro-Beträge sind Richtwerte, umgerechnet zum NBP-Mittelkurs vom {d} (1 EUR = {k} PLN). Verkaufspreis und Zahlung in PLN.' },
+        fr: { kr: 'indicatif', cena: 'prix indicatif', info: 'Converti au taux moyen de la NBP du {d} (1 EUR = {k} PLN). Prix de vente et paiement en PLN ; le montant en euros est donné à titre informatif.', nota: 'Les montants en euros sont indicatifs, convertis au taux moyen de la NBP du {d} (1 EUR = {k} PLN). Prix de vente et paiement en PLN.' },
+        sk: { kr: 'orientačne', cena: 'orientačná cena', info: 'Prepočet podľa priemerného kurzu NBP z {d} (1 EUR = {k} PLN). Predajná cena a platba v PLN; suma v eurách má len informatívny charakter.', nota: 'Sumy v eurách sú orientačné, prepočítané podľa priemerného kurzu NBP z {d} (1 EUR = {k} PLN). Predajná cena a platba v PLN.' },
+        cs: { kr: 'orientačně', cena: 'orientační cena', info: 'Přepočet podle průměrného kurzu NBP z {d} (1 EUR = {k} PLN). Prodejní cena a platba v PLN; částka v eurech je pouze informativní.', nota: 'Částky v eurech jsou orientační, přepočtené podle průměrného kurzu NBP z {d} (1 EUR = {k} PLN). Prodejní cena a platba v PLN.' },
+        it: { kr: 'indicativo', cena: 'prezzo indicativo', info: 'Convertito al cambio medio NBP del {d} (1 EUR = {k} PLN). Prezzo di vendita e pagamento in PLN; l’importo in euro è solo informativo.', nota: 'Gli importi in euro sono indicativi, convertiti al cambio medio NBP del {d} (1 EUR = {k} PLN). Prezzo di vendita e pagamento in PLN.' },
+        hr: { kr: 'okvirno', cena: 'okvirna cijena', info: 'Preračunato po srednjem tečaju NBP-a od {d} (1 EUR = {k} PLN). Prodajna cijena i plaćanje u PLN; iznos u eurima je samo informativan.', nota: 'Iznosi u eurima su okvirni, preračunati po srednjem tečaju NBP-a od {d} (1 EUR = {k} PLN). Prodajna cijena i plaćanje u PLN.' },
+        sl: { kr: 'okvirno', cena: 'okvirna cena', info: 'Preračunano po srednjem tečaju NBP z dne {d} (1 EUR = {k} PLN). Prodajna cena in plačilo v PLN; znesek v evrih je zgolj informativen.', nota: 'Zneski v evrih so okvirni, preračunani po srednjem tečaju NBP z dne {d} (1 EUR = {k} PLN). Prodajna cena in plačilo v PLN.' },
+        da: { kr: 'vejledende', cena: 'vejledende pris', info: 'Omregnet til NBP’s gennemsnitskurs pr. {d} (1 EUR = {k} PLN). Salgspris og betaling i PLN; beløbet i euro er kun til orientering.', nota: 'Beløb i euro er vejledende, omregnet til NBP’s gennemsnitskurs pr. {d} (1 EUR = {k} PLN). Salgspris og betaling i PLN.' },
+        no: { kr: 'veiledende', cena: 'veiledende pris', info: 'Omregnet etter NBPs gjennomsnittskurs per {d} (1 EUR = {k} PLN). Salgspris og betaling i PLN; beløpet i euro er kun til informasjon.', nota: 'Beløp i euro er veiledende, omregnet etter NBPs gjennomsnittskurs per {d} (1 EUR = {k} PLN). Salgspris og betaling i PLN.' },
+        sv: { kr: 'ungefärligt', cena: 'ungefärligt pris', info: 'Omräknat enligt NBP:s genomsnittskurs den {d} (1 EUR = {k} PLN). Försäljningspris och betalning i PLN; beloppet i euro är endast vägledande.', nota: 'Belopp i euro är ungefärliga, omräknade enligt NBP:s genomsnittskurs den {d} (1 EUR = {k} PLN). Försäljningspris och betalning i PLN.' },
+        fi: { kr: 'suuntaa-antava', cena: 'suuntaa-antava hinta', info: 'Muunnettu NBP:n keskikurssilla {d} (1 EUR = {k} PLN). Myyntihinta ja maksu PLN:nä; euromäärä on vain tiedoksi.', nota: 'Euromäärät ovat suuntaa-antavia, muunnettu NBP:n keskikurssilla {d} (1 EUR = {k} PLN). Myyntihinta ja maksu PLN:nä.' },
+        lt: { kr: 'orientacinė', cena: 'orientacinė kaina', info: 'Perskaičiuota pagal NBP vidutinį kursą ({d}; 1 EUR = {k} PLN). Pardavimo kaina ir mokėjimas – PLN; suma eurais yra tik informacinė.', nota: 'Sumos eurais yra orientacinės, perskaičiuotos pagal NBP vidutinį kursą ({d}; 1 EUR = {k} PLN). Pardavimo kaina ir mokėjimas – PLN.' },
+        lv: { kr: 'orientējoši', cena: 'orientējoša cena', info: 'Pārrēķināts pēc NBP vidējā kursa {d} (1 EUR = {k} PLN). Pārdošanas cena un maksājums PLN; summa eiro ir tikai informatīva.', nota: 'Summas eiro ir orientējošas, pārrēķinātas pēc NBP vidējā kursa {d} (1 EUR = {k} PLN). Pārdošanas cena un maksājums PLN.' },
+        et: { kr: 'ligikaudne', cena: 'ligikaudne hind', info: 'Arvestatud NBP keskmise kursi järgi seisuga {d} (1 EUR = {k} PLN). Müügihind ja makse PLN-ides; summa eurodes on vaid informatiivne.', nota: 'Summad eurodes on ligikaudsed, arvestatud NBP keskmise kursi järgi seisuga {d} (1 EUR = {k} PLN). Müügihind ja makse PLN-ides.' },
+        bg: { kr: 'ориентировъчно', cena: 'ориентировъчна цена', info: 'Преизчислено по средния курс на NBP от {d} (1 EUR = {k} PLN). Продажната цена и плащането са в PLN; сумата в евро е само за информация.', nota: 'Сумите в евро са ориентировъчни, преизчислени по средния курс на NBP от {d} (1 EUR = {k} PLN). Продажната цена и плащането са в PLN.' },
+        el: { kr: 'ενδεικτικά', cena: 'ενδεικτική τιμή', info: 'Μετατροπή με τη μέση ισοτιμία της NBP της {d} (1 EUR = {k} PLN). Η τιμή πώλησης και η πληρωμή είναι σε PLN· το ποσό σε ευρώ είναι μόνο ενημερωτικό.', nota: 'Τα ποσά σε ευρώ είναι ενδεικτικά, με μετατροπή στη μέση ισοτιμία της NBP της {d} (1 EUR = {k} PLN). Η τιμή πώλησης και η πληρωμή είναι σε PLN.' },
+        hu: { kr: 'tájékoztató', cena: 'tájékoztató ár', info: 'Átszámítva az NBP középárfolyamán ({d}; 1 EUR = {k} PLN). Az eladási ár és a fizetés PLN-ben; az euróösszeg csak tájékoztató jellegű.', nota: 'Az euróösszegek tájékoztató jellegűek, az NBP középárfolyamán átszámítva ({d}; 1 EUR = {k} PLN). Az eladási ár és a fizetés PLN-ben.' },
+        ro: { kr: 'orientativ', cena: 'preț orientativ', info: 'Convertit la cursul mediu NBP din {d} (1 EUR = {k} PLN). Prețul de vânzare și plata sunt în PLN; suma în euro are caracter informativ.', nota: 'Sumele în euro sunt orientative, convertite la cursul mediu NBP din {d} (1 EUR = {k} PLN). Prețul de vânzare și plata sunt în PLN.' },
+        pt: { kr: 'indicativo', cena: 'preço indicativo', info: 'Convertido à taxa média do NBP de {d} (1 EUR = {k} PLN). Preço de venda e pagamento em PLN; o valor em euros é apenas informativo.', nota: 'Os valores em euros são indicativos, convertidos à taxa média do NBP de {d} (1 EUR = {k} PLN). Preço de venda e pagamento em PLN.' },
+        es: { kr: 'orientativo', cena: 'precio orientativo', info: 'Convertido al tipo de cambio medio del NBP del {d} (1 EUR = {k} PLN). Precio de venta y pago en PLN; el importe en euros es solo informativo.', nota: 'Los importes en euros son orientativos, convertidos al tipo de cambio medio del NBP del {d} (1 EUR = {k} PLN). Precio de venta y pago en PLN.' },
+        nl: { kr: 'indicatief', cena: 'indicatieve prijs', info: 'Omgerekend tegen de gemiddelde NBP-koers van {d} (1 EUR = {k} PLN). Verkoopprijs en betaling in PLN; het bedrag in euro is alleen ter informatie.', nota: 'Bedragen in euro zijn indicatief, omgerekend tegen de gemiddelde NBP-koers van {d} (1 EUR = {k} PLN). Verkoopprijs en betaling in PLN.' },
+        uk: { kr: 'орієнтовно', cena: 'орієнтовна ціна', info: 'Перераховано за середнім курсом NBP на {d} (1 EUR = {k} PLN). Ціна продажу та оплата в PLN; сума в євро має лише інформаційний характер.', nota: 'Суми в євро орієнтовні, перераховані за середнім курсом NBP на {d} (1 EUR = {k} PLN). Ціна продажу та оплата в PLN.' },
+        ru: { kr: 'ориентировочно', cena: 'ориентировочная цена', info: 'Пересчитано по среднему курсу NBP на {d} (1 EUR = {k} PLN). Цена продажи и оплата в PLN; сумма в евро носит информационный характер.', nota: 'Суммы в евро ориентировочные, пересчитаны по среднему курсу NBP на {d} (1 EUR = {k} PLN). Цена продажи и оплата в PLN.' }
+    };
+    function tekst(pole) {
+        var t = (T[jezyk] || T.en)[pole];
+        return t.replace('{d}', dataKursu()).replace('{k}', kursTekst());
+    }
+
     // ── Liczenie i formatowanie ──────────────────────────────────────────────
-    // „3 299,00 zł” / „3299,00” -> 3299
+    // Kwota w dowolnym zapisie: „3 299,00 zł”, „3.299,00”, a po tłumaczeniu na angielski
+    // „1,179.00 PLN” / „PLN 1,179.00”. Separator dziesiętny = ostatni przecinek albo kropka,
+    // po którym są dokładnie 2 cyfry; pozostałe znaki to separatory tysięcy.
     function liczba(t) {
-        var s = String(t || '').replace(/[^\d,.\-]/g, '');
+        var s = String(t || '').replace(/[^\d.,]/g, '');
         if (!s) return NaN;
-        if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
-        return parseFloat(s);
+        var m = s.match(/^(.*?)[.,](\d{2})$/);
+        if (m) return parseFloat((m[1].replace(/[.,]/g, '') || '0') + '.' + m[2]);
+        return parseFloat(s.replace(/[.,]/g, ''));
     }
     function kwota(pln) {
         var eur = Math.round(pln / kurs.mid * 100) / 100;
         try { return new Intl.NumberFormat(jezyk || 'pl', { style: 'currency', currency: WALUTA }).format(eur); }
-        catch (e) { return eur.toFixed(2).replace('.', ',') + ' €'; }
+        catch (e) { return eur.toFixed(2) + ' €'; }
     }
     function dataKursu() {
-        var p = kurs.data.split('-');
-        return p[2] + '.' + p[1] + '.' + p[0];
+        // nazwa miesiąca zamiast 02/10 – zapis liczbowy różni się między krajami (10/02 w USA)
+        try { return new Intl.DateTimeFormat(jezyk !== 'en' && T[jezyk] ? jezyk : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(kurs.data + 'T12:00:00')); }
+        catch (e) { var p = kurs.data.split('-'); return p[2] + '.' + p[1] + '.' + p[0]; }
     }
-    function kursTekst() { return String(kurs.mid).replace('.', ','); }
-    function opis() {
-        return 'Cena orientacyjna: przeliczenie wg średniego kursu NBP z ' + dataKursu() +
-            ' (1 ' + WALUTA + ' = ' + kursTekst() + ' zł). Cena sprzedaży i płatność w PLN.';
+    function kursTekst() {
+        try { return new Intl.NumberFormat(jezyk || 'pl', { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(kurs.mid); }
+        catch (e) { return String(kurs.mid); }
     }
+    function opis() { return tekst('info'); }
 
-    // element z kwotą; sama kwota nie jest tłumaczona (notranslate), opis tłumaczy tłumacz strony
+    // element z kwotą; cały w języku klienta, więc tłumacz strony go nie rusza (notranslate)
     function element(pln, karta) {
         var el = document.createElement(karta ? 'div' : 'span');
-        el.className = 'cena-euro' + (karta ? ' cena-euro--karta' : '');
+        el.className = 'cena-euro notranslate' + (karta ? ' cena-euro--karta' : '');
+        el.setAttribute('translate', 'no');
         el.setAttribute('data-pln', String(pln));
         el.title = opis();
         var k = document.createElement('span');
-        k.className = 'cena-euro__kwota notranslate';
-        k.setAttribute('translate', 'no');
+        k.className = 'cena-euro__kwota';
         k.textContent = '≈ ' + kwota(pln);
         el.appendChild(k);
         if (karta) {
-            el.appendChild(document.createTextNode(' – cena orientacyjna'));
+            el.appendChild(document.createTextNode(' – ' + tekst('cena')));
             var info = document.createElement('span');
             info.className = 'cena-euro__info';
-            info.textContent = 'Przeliczenie wg średniego kursu NBP z ' + dataKursu() + ' (1 ' + WALUTA + ' = ' +
-                kursTekst() + ' zł). Cena sprzedaży i płatność w PLN; kwota w euro ma charakter informacyjny.';
+            info.textContent = tekst('info');
             el.appendChild(info);
         } else {
-            el.appendChild(document.createTextNode(' (orientacyjnie)'));
+            el.appendChild(document.createTextNode(' (' + tekst('kr') + ')'));
         }
         return el;
     }
@@ -166,7 +204,8 @@
     // którego cały tekst to kwota w PLN („2.399,00 PLN”, „39,00 zł”). Pomijamy zera, ukryte
     // i przekreślone kwoty oraz ceny przy wyborze dostawy i płatności (obok przycisku radio).
     // Pod największą kwotą („Do zapłaty”) jedna notka: kurs NBP i płatność w PLN.
-    var KWOTA = /^\d{1,3}(?:[\s\u00a0.]\d{3})*,\d{2}\s*(?:zł|PLN)$/i;
+    var LICZBA = '\\d{1,3}(?:[\\s\\u00a0.,\']\\d{3})*[.,]\\d{2}';
+    var KWOTA = new RegExp('^(?:(?:zł|PLN)\\s*' + LICZBA + '|' + LICZBA + '\\s*(?:zł|PLN))$', 'i');
     function naKoszyku() { return /(^|\/)zamowienie,4/.test(location.pathname); }
     // tekst elementu bez naszych dopisków w euro
     function tekstBezEuro(el) {
@@ -190,7 +229,7 @@
     function przyWyborze(el) {
         for (var r = el.parentNode, i = 0; r && r !== document.body && i < 6; r = r.parentNode, i++) {
             if (!r.querySelector('input[type="radio"]')) continue;
-            return (tekstBezEuro(r).match(/\d,\d{2}\s*(?:zł|PLN)/gi) || []).length === 1;
+            return (tekstBezEuro(r).match(/\d[.,]\d{2}\s*(?:zł|PLN)|(?:zł|PLN)\s*\d[0-9\s.,']*[.,]\d{2}/gi) || []).length === 1;
         }
         return false;
     }
@@ -198,7 +237,7 @@
         var main = document.querySelector('main') || document.body, wynik = [];
         var w = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, null, false), t;
         while ((t = w.nextNode())) {
-            if (!/\d,\d{2}/.test(t.nodeValue)) continue;
+            if (!/\d[.,]\d{2}/.test(t.nodeValue)) continue;
             var el = t.parentNode;
             if (!el || el.closest('.cena-euro, script, style, select, option, textarea')) continue;
             // najmniejszy element z całą kwotą (np. <span>2.399,00</span> <span>PLN</span> razem)
@@ -238,10 +277,10 @@
         if (nota && nota.previousSibling === wiersz && nota.getAttribute('data-k') === klucz) return;
         if (nota) nota.remove();
         nota = document.createElement('div');
-        nota.className = 'cena-euro cena-euro-nota';
+        nota.className = 'cena-euro cena-euro-nota notranslate';
+        nota.setAttribute('translate', 'no');
         nota.setAttribute('data-k', klucz);
-        nota.textContent = 'Kwoty w euro są orientacyjne: przeliczenie wg średniego kursu NBP z ' + dataKursu() +
-            ' (1 ' + WALUTA + ' = ' + kursTekst() + ' zł). Cena sprzedaży i płatność w PLN.';
+        nota.textContent = tekst('nota');
         wiersz.parentNode.insertBefore(nota, wiersz.nextSibling);
     }
 
