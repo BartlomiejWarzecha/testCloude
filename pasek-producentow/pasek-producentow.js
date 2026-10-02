@@ -16,7 +16,6 @@
 //    producenta w bieżącej kategorii i ukrywa producentów bez produktów w niej;
 //    gdzie indziej prowadzi do /produkty,2 z wybranym producentem. Bez paska
 //    w koszyku, zamówieniu, na koncie i przy logowaniu.
-// 4. Kafelki podkategorii nad listą produktów: bez liczby produktów „(824)”.
 //
 // Ładować w szablonie całego sklepu:
 //   <script src="/usr/pasek-producentow.js"></script>
@@ -582,41 +581,8 @@
         } catch (e) {}
     }
 
-    // ── 4. Bez liczby produktów na kafelkach podkategorii ────────────────────
-    // Sklep dopisuje „<br>(824)” do nazw kafelków nad listą produktów
-    // (.productsList__products--top-subcategories-container), a js/kafle-kategorii.js
-    // podmienia tę liczbę po filtrze. Usuwamy ją (także po przeładowaniu listy);
-    // gdy liczby nie ma, kafle-kategorii.js po prostu nic nie zmienia.
-    var NAZWA_KAFLA = '.productsList__products--top-subcategories-container-data-name';
-    function bezLicznikow() {
-        [].forEach.call(document.querySelectorAll(NAZWA_KAFLA), function (el) {
-            var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), t, puste = [];
-            while ((t = w.nextNode())) {
-                if (!/\(\d+\)/.test(t.nodeValue)) continue;
-                t.nodeValue = t.nodeValue.replace(/\s*\(\d+\)\s*/g, ' ');
-                if (!t.nodeValue.trim()) puste.push(t);
-            }
-            // <br> przed usuniętą liczbą zostawiałby pustą linię
-            puste.forEach(function (t) {
-                var br = t.previousSibling;
-                while (br && br.nodeType === 3 && !br.nodeValue.trim()) br = br.previousSibling;
-                if (br && br.nodeName === 'BR') br.remove();
-            });
-        });
-    }
-    function startBezLicznikow() {
-        bezLicznikow();
-        if (!window.MutationObserver) return;
-        var timer = null;
-        new MutationObserver(function () {
-            if (timer) return;
-            timer = setTimeout(function () { timer = null; bezLicznikow(); }, 0);
-        }).observe(document.body, { childList: true, subtree: true, characterData: true });
-    }
-
     // ── Start ────────────────────────────────────────────────────────────────
     function start() {
-        if (document.querySelector(NAZWA_KAFLA)) startBezLicznikow();
         if (document.querySelector('.pasek-prod')) return;
         var slider = document.querySelector('main .gridContainer .hero-slider');   // strona główna
         if (slider) { startGlowna(slider); return; }
