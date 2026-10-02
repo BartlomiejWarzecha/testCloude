@@ -109,7 +109,8 @@
         '.pasek-prod-kat .pasek-prod{margin:0}' +
         '.pasek-prod__info{margin:10px 0 0;font-size:14px;color:#4a5263;line-height:1.5;text-align:left}' +
         '.pasek-prod__info b{color:#1d2433}' +
-        '.pasek-prod__info a{color:#22355c;font-weight:600;text-decoration:underline;margin-left:12px;white-space:nowrap}' +
+        '.pasek-prod__info a{color:#22355c;font-weight:600;text-decoration:underline;margin-left:16px;white-space:nowrap}' +
+        '.pasek-prod__info a:first-child{margin-left:0}' +
         '.product-list__categories-wrapper.pp-laduje{opacity:.45;pointer-events:none}' +
         '.product-list__categories-wrapper{transition:opacity .2s}' +
         'img.pp-foto{object-fit:contain!important;background:#fff}' +
@@ -316,11 +317,6 @@
             return w;
         }, function () { return null; });
     }
-    function liczbaWszystkich(p) {
-        return pobierzJson('/' + filtr(p) + STRONA_KATEGORII).then(function (r) {
-            return ((r && r.collection) || {}).TotalItems || 0;
-        }, function () { return null; });
-    }
 
     // ── 2. Strona kategorii: kafelki ─────────────────────────────────────────
     function startKategorie(wrap) {
@@ -366,17 +362,16 @@
             }
             wrap.classList.add('pp-laduje');
             var czekaj = kafle.map(function (k) { return daneKategorii(p, k.href); });
-            czekaj.push(liczbaWszystkich(p));
             Promise.all(czekaj).then(function (wyniki) {
                 if (moja !== wersja) return;   // w międzyczasie wybrano innego producenta
-                var razem = wyniki.pop(), kategorii = 0;
+                var kategorii = 0;
                 kafle.forEach(function (k, i) {
                     var w = wyniki[i];
                     if (w && !w.n) { k.a.style.display = 'none'; return; }
                     kategorii++;
                     pokaz(k, p, w);
                 });
-                opisz(p, razem, kategorii);
+                opisz(p, kategorii);
                 wrap.classList.remove('pp-laduje');
             });
         }
@@ -429,14 +424,14 @@
             img.className = 'product-list__category-list-element-img pp-foto';
             nastepne();
         }
-        function opisz(p, razem, kategorii) {
+        function opisz(p, kategorii) {
             info.textContent = '';
-            var b = document.createElement('b');
-            b.textContent = p.nazwa;
-            info.appendChild(b);
-            info.appendChild(document.createTextNode(kategorii
-                ? ': ' + (razem ? produktow(razem) + ' w ' : '') + kategorii + (kategorii === 1 ? ' kategorii' : ' kategoriach')
-                : ': brak produktów w sklepie'));
+            if (!kategorii) {
+                var b = document.createElement('b');
+                b.textContent = p.nazwa;
+                info.appendChild(b);
+                info.appendChild(document.createTextNode(': brak produktów w sklepie'));
+            }
             if (kategorii) {
                 var wsz = document.createElement('a');
                 wsz.href = '/' + filtr(p) + STRONA_KATEGORII;
