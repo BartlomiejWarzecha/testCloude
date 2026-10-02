@@ -4,7 +4,7 @@
 //    otwiera stronę kategorii (/produkty,2) z wybranym producentem.
 // 2. Strona kategorii /produkty,2: ten sam pasek nad okruszkami – jak pasek
 //    „Producent” w menu na telefonie (js/menu-kiosk.js). Po wyborze producenta
-//    zostają tylko kategorie z jego produktami (z liczbą), zdjęcia kafelków
+//    zostają tylko kategorie z jego produktami, zdjęcia kafelków
 //    pokazują jego produkty, a linki prowadzą do listy przefiltrowanej
 //    (/producent=<adres>/produkty/...,2,<id>). Dalej filtr trzymają sklep i
 //    js/kafle-kategorii.js. Wybór jest wspólny z menu na telefonie i komputerze
@@ -112,7 +112,6 @@
         '.pasek-prod__info a{color:#22355c;font-weight:600;text-decoration:underline;margin-left:12px;white-space:nowrap}' +
         '.product-list__categories-wrapper.pp-laduje{opacity:.45;pointer-events:none}' +
         '.product-list__categories-wrapper{transition:opacity .2s}' +
-        '.pp-liczba{font-weight:400;color:#6b7280}' +
         'img.pp-foto{object-fit:contain!important;background:#fff}' +
         '@media (max-width:768px){.pasek-prod{gap:8px;margin-bottom:16px;padding:0 16px}' +
             '.pasek-prod__tytul,.pasek-prod__strzalka{display:none}' +
@@ -391,18 +390,10 @@
             zapisz(k);
             k.a.style.display = '';
             k.a.setAttribute('href', '/' + filtr(p) + '/' + sciezka(k.href));
-            var tyt = k.a.querySelector('.product-list__category-list-element-title');
-            var licz = k.a.querySelector('.pp-liczba');
-            if (w && tyt) {
-                if (!licz) { licz = document.createElement('span'); licz.className = 'pp-liczba'; tyt.appendChild(licz); }
-                licz.textContent = ' (' + w.n + ')';
-            } else if (licz) licz.remove();
             if (w && w.imgs && w.imgs.length) ustawZdjecie(k, w.imgs);
         }
         function przywroc(k) {
             k.a.style.display = '';
-            var licz = k.a.querySelector('.pp-liczba');
-            if (licz) licz.remove();
             if (!k.org) return;
             k.a.setAttribute('href', k.org.href);
             var img = k.a.querySelector('img');
