@@ -12,6 +12,9 @@
 //   (te informacje zostają tylko w PLN), nie ruszamy danych dla Google (schema.org),
 // - gdy kursu nie da się pobrać albo jest starszy niż 7 dni, euro się nie pokazuje.
 //
+// Koszyk (zamowienie,4): pod każdą kwotą w PLN „≈ X €”, a pod kwotą do zapłaty
+// notka o kursie NBP i płatności w PLN. Ceny przy wyborze dostawy/płatności bez euro.
+//
 // Ładować w szablonie całego sklepu:
 //   <script src="/usr/cena-euro.js"></script>
 // =============================================================================
@@ -37,7 +40,10 @@
         '.cena-euro{display:block;font-size:13px;line-height:1.35;color:#5b6270;font-weight:400;margin-top:2px}' +
         '.cena-euro__kwota{font-weight:600;color:#3a4150;white-space:nowrap}' +
         '.cena-euro--karta{font-size:15px;margin:4px 0 6px}' +
-        '.cena-euro--karta .cena-euro__info{display:block;font-size:12px;color:#6b7280;margin-top:2px}';
+        '.cena-euro--karta .cena-euro__info{display:block;font-size:12px;color:#6b7280;margin-top:2px}' +
+        '.cena-euro--koszyk{text-align:right;font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;white-space:nowrap}' +
+        '.cena-euro-nota{display:block;font-size:12px;line-height:1.4;color:#6b7280;font-weight:400;' +
+            'letter-spacing:0;text-transform:none;margin:6px 0 10px;text-align:left}';
 
     var kurs = null;            // { mid: 4.3745, data: '2026-10-02' }
     var jezyk = null;           // np. 'de', null = polski / brak tłumaczenia
@@ -155,8 +161,93 @@
         }
         return null;
     }
+    // ── Koszyk (zamowienie,4) ────────────────────────────────────────────────
+    // Kwoty koszyka sklep doczytuje w przeglądarce, więc szukamy ich po treści: element,
+    // którego cały tekst to kwota w PLN („2.399,00 PLN”, „39,00 zł”). Pomijamy zera, ukryte
+    // i przekreślone kwoty oraz ceny przy wyborze dostawy i płatności (obok przycisku radio).
+    // Pod największą kwotą („Do zapłaty”) jedna notka: kurs NBP i płatność w PLN.
+    var KWOTA = /^\d{1,3}(?:[\s\u00a0.]\d{3})*,\d{2}\s*(?:zł|PLN)$/i;
+    function naKoszyku() { return /(^|\/)zamowienie,4/.test(location.pathname); }
+    // tekst elementu bez naszych dopisków w euro
+    function tekstBezEuro(el) {
+        var t = '';
+        (function zbierz(n) {
+            for (var c = n.firstChild; c; c = c.nextSibling) {
+                if (c.nodeType === 3) t += c.nodeValue;
+                else if (c.nodeType === 1 && !c.classList.contains('cena-euro') && !/^(SCRIPT|STYLE)$/.test(c.nodeName)) zbierz(c);
+            }
+        })(el);
+        return t.replace(/[\s\u00a0]+/g, ' ').trim();
+    }
+    // wiersz z kwotą: najbliższy element z czymś więcej niż sama kwota (np. „Versandkosten 39,00 PLN”)
+    function wierszKwoty(el) {
+        var w = el;
+        while (w.parentNode && w.parentNode !== document.body && KWOTA.test(tekstBezEuro(w))) w = w.parentNode;
+        return w;
+    }
+    // cena metody dostawy/płatności: najbliższy blok z przyciskiem radio zawiera tylko tę
+    // jedną kwotę (opcja „Kurier … 39,00 PLN”); kolumna koszyka z produktami ma ich więcej
+    function przyWyborze(el) {
+        for (var r = el.parentNode, i = 0; r && r !== document.body && i < 6; r = r.parentNode, i++) {
+            if (!r.querySelector('input[type="radio"]')) continue;
+            return (tekstBezEuro(r).match(/\d,\d{2}\s*(?:zł|PLN)/gi) || []).length === 1;
+        }
+        return false;
+    }
+    function kwotyKoszyka() {
+        var main = document.querySelector('main') || document.body, wynik = [];
+        var w = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, null, false), t;
+        while ((t = w.nextNode())) {
+            if (!/\d,\d{2}/.test(t.nodeValue)) continue;
+            var el = t.parentNode;
+            if (!el || el.closest('.cena-euro, script, style, select, option, textarea')) continue;
+            // najmniejszy element z całą kwotą (np. <span>2.399,00</span> <span>PLN</span> razem)
+            while (el && el !== main && !KWOTA.test(tekstBezEuro(el))) el = el.parentNode;
+            if (!el || el === main) continue;
+            // tłumacz Google owija tekst w <font> – dopisek wstawiamy do elementu sklepu
+            while (el.nodeName === 'FONT' && el.parentNode !== main) el = el.parentNode;
+            if (!KWOTA.test(tekstBezEuro(el)) || wynik.indexOf(el) >= 0) continue;
+            if (el.offsetParent === null || przyWyborze(el)) continue;
+            if ((getComputedStyle(el).textDecorationLine || '').indexOf('line-through') >= 0) continue;
+            wynik.push(el);
+        }
+        return wynik;
+    }
+    function odswiezKoszyk() {
+        var kwoty = kwotyKoszyka(), suma = null, sumaPln = 0;
+        kwoty.forEach(function (el) {
+            var pln = liczba(tekstBezEuro(el)), stary = el.querySelector(':scope > .cena-euro');
+            if (!(pln > 0)) { if (stary) stary.remove(); return; }
+            if (pln > sumaPln) { sumaPln = pln; suma = el; }
+            if (stary && stary.getAttribute('data-pln') === String(pln) && stary.getAttribute('data-j') === jezyk) return;
+            if (stary) stary.remove();
+            var e = document.createElement('span');
+            e.className = 'cena-euro cena-euro--koszyk notranslate';
+            e.setAttribute('translate', 'no');
+            e.setAttribute('data-pln', String(pln));
+            e.setAttribute('data-j', jezyk);
+            e.title = opis();
+            e.textContent = '≈ ' + kwota(pln);
+            el.appendChild(e);
+        });
+        // notka pod wierszem „Do zapłaty” (największa kwota w koszyku)
+        var nota = document.querySelector('.cena-euro-nota');
+        if (!suma) { if (nota) nota.remove(); return; }
+        var wiersz = wierszKwoty(suma);
+        var klucz = jezyk + '|' + kurs.data;
+        if (nota && nota.previousSibling === wiersz && nota.getAttribute('data-k') === klucz) return;
+        if (nota) nota.remove();
+        nota = document.createElement('div');
+        nota.className = 'cena-euro cena-euro-nota';
+        nota.setAttribute('data-k', klucz);
+        nota.textContent = 'Kwoty w euro są orientacyjne: przeliczenie wg średniego kursu NBP z ' + dataKursu() +
+            ' (1 ' + WALUTA + ' = ' + kursTekst() + ' zł). Cena sprzedaży i płatność w PLN.';
+        wiersz.parentNode.insertBefore(nota, wiersz.nextSibling);
+    }
+
     function odswiez() {
         if (!jezyk || !kurs) { usunWszystko(); return; }
+        if (naKoszyku()) { odswiezKoszyk(); return; }
         // karta produktu (wersja na komputer i na telefon)
         [].forEach.call(document.querySelectorAll(KARTA), function (box) {
             var c = cenaKarty(box), stary = box.querySelector(':scope > .cena-euro');
