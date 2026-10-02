@@ -38,7 +38,7 @@
         { nazwa: 'WOLF-Garten',       link: '/producent=wolf-garten/produkty,2', logo: 'pasek-logo-wolf-garten.png' },
         { nazwa: 'Fiskars',           link: '/producent=fiskars/produkty,2', logo: 'pasek-logo-fiskars.png' },
         { nazwa: 'Milwaukee',         link: '/producent=milwaukee/produkty,2', logo: 'pasek-logo-milwaukee.png' },
-        { nazwa: 'Emeralld',          link: '/producent=emeralld/produkty,2' },
+        { nazwa: 'Emeralld',          link: '/producent=emeralld/produkty,2', logo: 'pasek-logo-emeralld.png' },
         { nazwa: 'GKB Machines',      link: '/producent=gkb%20machines/produkty,2', logo: 'pasek-logo-gkb-machines.png' },
         { nazwa: 'Weibang',           link: '/producent=weibang/produkty,2', logo: 'pasek-logo-weibang.png' },
         { nazwa: 'Loncin',            link: '/producent=loncin/produkty,2' },
@@ -65,7 +65,7 @@
         '.pasek-prod{display:flex;align-items:center;gap:12px;margin:0 auto 24px;box-sizing:border-box;font-family:Poppins,sans-serif}' +
         '.pasek-prod__tytul{flex:0 0 auto;font-size:14px;font-weight:600;color:#1d2433;white-space:nowrap}' +
         '.pasek-prod__okno{position:relative;flex:1 1 auto;min-width:0}' +
-        '.pasek-prod__lista{display:flex;gap:8px;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x proximity;' +
+        '.pasek-prod__lista{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x proximity;' +
             'scrollbar-width:none;padding:2px;margin:0;list-style:none}' +
         '.pasek-prod__lista::-webkit-scrollbar{display:none}' +
         '.pasek-prod__lista li{flex:0 0 auto;scroll-snap-align:start}' +
@@ -81,6 +81,8 @@
         '.pasek-prod__strzalka[disabled]{opacity:.35;cursor:default}' +
         '.pasek-prod__okno::after{content:"";position:absolute;top:0;right:0;bottom:0;width:32px;pointer-events:none;' +
             'background:linear-gradient(to right,rgba(255,255,255,0),#fff)}' +
+        '.pasek-prod--miesci .pasek-prod__strzalka{display:none}' +
+        '.pasek-prod--miesci .pasek-prod__okno::after,.pasek-prod--koniec .pasek-prod__okno::after{display:none}' +
         '@media (max-width:768px){.pasek-prod{gap:8px;margin-bottom:16px;padding:0 16px}' +
             '.pasek-prod__tytul,.pasek-prod__strzalka{display:none}' +
             '.pasek-prod__link{height:36px;padding:0 12px;font-size:13px}' +
@@ -132,12 +134,18 @@
             return b;
         }
         var lewa = strzalka('‹', -1, 'Przewiń w lewo'), prawa = strzalka('›', 1, 'Przewiń w prawo');
+        // Przewijanie tylko gdy lista się nie mieści – inaczej bez strzałek i cieniowania.
         function odswiezStrzalki() {
+            var miesci = lista.scrollWidth <= lista.clientWidth + 2;
+            var koniec = lista.scrollLeft + lista.clientWidth >= lista.scrollWidth - 2;
+            pasek.classList.toggle('pasek-prod--miesci', miesci);
+            pasek.classList.toggle('pasek-prod--koniec', koniec);
             lewa.disabled = lista.scrollLeft <= 2;
-            prawa.disabled = lista.scrollLeft + lista.clientWidth >= lista.scrollWidth - 2;
+            prawa.disabled = koniec;
         }
         lista.addEventListener('scroll', odswiezStrzalki, { passive: true });
         window.addEventListener('resize', odswiezStrzalki);
+        lista.addEventListener('load', odswiezStrzalki, true);   // logo doczytane = zmiana szerokości
 
         pasek.appendChild(tytul);
         pasek.appendChild(lewa);
