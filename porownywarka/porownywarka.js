@@ -69,6 +69,11 @@
         '.pc-prod{position:relative;padding-top:16px!important;background:#fff;font-weight:400}' +
         '.pc-rog{font-size:12px;font-weight:400;color:#6b7280;vertical-align:bottom!important}' +
         '.pc-rog i{display:inline-block;width:3px;height:14px;background:#22355c;vertical-align:-2px;margin-right:6px}' +
+        '.pc-rog__l{display:block;margin-top:4px}' +
+        '.pc-rog__naj b,.pc-naj::before{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;' +
+            'background:#16a34a;color:#fff;font-size:10px;font-weight:700;margin-right:6px;vertical-align:1px}' +
+        '.pc-tab td.pc-naj{background:#ecfdf3;color:#166534}' +
+        '.pc-naj::before{content:"✓"}' +
         '.pc-prod__usun{position:absolute;top:8px;right:8px;width:30px;height:30px;border:0;border-radius:50%;background:#f3f4f6;' +
             'color:#4a5263;font-size:18px;line-height:30px;cursor:pointer;padding:0}' +
         '.pc-prod__usun:hover{background:#e5e7eb;color:#b42318}' +
@@ -226,6 +231,60 @@
         });
     }
 
+    // ── Najkorzystniejsza wartość ────────────────────────────────────────────
+    // Tylko cechy, przy których wiadomo, co jest lepsze (rozpoznawane po nazwie).
+    // Cechy niejednoznaczne (napięcie, długość prowadnicy, wysokość koszenia…) bez wyróżnienia.
+    var WIECEJ_LEPIEJ = /(moc|pojemno|szeroko\S* (koszenia|robocza|cięcia|ciecia)|powierzchni|zasięg|zasieg|czas pracy|wydajno|ciśnieni|cisnieni|przepływ|przeplyw|gwarancj|nachyleni|liczba stref|długość węża|dlugosc weza|udźwig|udzwig|prędkość jazdy|siła ciągu|sila ciagu)/i;
+    var MNIEJ_LEPIEJ = /(^waga|masa|ciężar|ciezar|hałas|halas|głośno|glosno|poziom (mocy )?akustyczn|ci[sś]nienia akustyczn|drgania|wibracj|czas ładowania|czas ladowania|zużycie|zuzycie|spalanie)/i;
+    var NIEJEDNOZNACZNE = /(napięci|napieci|prowadnic|wysoko\S* koszenia|obroty|prędkość obrotowa|predkosc obrotowa|średnica|srednica|gwint|podziałka|podzialka)/i;
+    // liczba i jednostka z wartości („5,1 kg”, „1 200 m²”, „~25 m”); zakresy („25–75 mm”) pomijamy
+    function liczbaZJednostka(t) {
+        t = String(t || '').trim();
+        if (/\d\s*[-–—]\s*\d/.test(t)) return null;
+        // przedrostki „do 600 m²”, „max. 25”, „ok. 3 h”, „~5 kg”
+        t = t.replace(/^(?:\s|do\b|max\.?|maks\.?|ok\.?|około|okolo|ponad|~|≈)+/i, '');
+        var m = t.match(/^(\d{1,3}(?:[ \u00a0]\d{3})+|\d+)(?:[.,](\d+))?\s*(.*)$/i);
+        if (!m) return null;
+        var j = m[3].toLowerCase().replace(/\s+/g, ' ').trim().replace(/^m2$/, 'm²').replace(/^m3$/, 'm³');
+        return { n: parseFloat(m[1].replace(/[ \u00a0]/g, '') + (m[2] ? '.' + m[2] : '')), j: j };
+    }
+    // „Od ręki” = 0 dni, „3 – 5 dni” = 3, „24 h” = 1
+    function dniDostawy(t) {
+        t = porownawczo(t);
+        if (/od r[eę]ki|dost[eę]pny|natychmiast|24 ?h/.test(t)) return /24 ?h/.test(t) ? 1 : 0;
+        var m = t.match(/(\d+)/);
+        return m ? parseInt(m[1], 10) : null;
+    }
+    // indeksy produktów z najkorzystniejszą wartością (puste, gdy nie da się ocenić albo wszystkie równe)
+    function najlepsze(w) {
+        var kierunek = 0, liczby;
+        if (/^dost[eę]pno/i.test(w.nazwa)) {
+            kierunek = -1;
+            liczby = w.wartosci.map(function (v) { return v.brak ? null : dniDostawy(v.tekst); });
+        } else {
+            if (NIEJEDNOZNACZNE.test(w.nazwa)) return [];
+            if (MNIEJ_LEPIEJ.test(w.nazwa)) kierunek = -1;
+            else if (WIECEJ_LEPIEJ.test(w.nazwa)) kierunek = 1;
+            if (!kierunek) return [];
+            var jedn = null, zgodne = true;
+            liczby = w.wartosci.map(function (v) {
+                if (v.brak) return null;
+                var x = liczbaZJednostka(v.tekst);
+                if (!x) { zgodne = false; return null; }
+                if (jedn === null) jedn = x.j; else if (x.j !== jedn) zgodne = false;   // różne jednostki – nie porównujemy
+                return x.n;
+            });
+            if (!zgodne) return [];
+        }
+        var znane = liczby.filter(function (n) { return n !== null && !isNaN(n); });
+        if (znane.length < 2) return [];
+        var best = kierunek > 0 ? Math.max.apply(null, znane) : Math.min.apply(null, znane);
+        if (znane.every(function (n) { return n === best; })) return [];
+        var idx = [];
+        liczby.forEach(function (n, i) { if (n === best) idx.push(i); });
+        return idx;
+    }
+
     // ── Budowa tabeli ────────────────────────────────────────────────────────
     var stan = { produkty: [], wiersze: [], tylkoRoznice: false };
     var pc, tab, przewin, licznik, przelLicz, pasek, podp;
@@ -293,8 +352,14 @@
         rog.setAttribute('scope', 'col');
         rog.className = 'pc-lab pc-rog';
         if (ile > 1) {
-            rog.appendChild(el('i'));
-            rog.appendChild(document.createTextNode('Wyróżnione cechy różnią produkty'));
+            var l1 = el('span', 'pc-rog__l');
+            l1.appendChild(el('i'));
+            l1.appendChild(document.createTextNode('Wyróżnione cechy różnią produkty'));
+            rog.appendChild(l1);
+            var l2 = el('span', 'pc-rog__l pc-rog__naj');
+            l2.appendChild(el('b', null, '✓'));
+            l2.appendChild(document.createTextNode('Najkorzystniejsza wartość'));
+            rog.appendChild(l2);
         }
         tr.appendChild(rog);
         stan.produkty.forEach(function (p) { tr.appendChild(komorkaProduktu(p, p.cena === min && ileMin === 1)); });
@@ -313,7 +378,7 @@
         tab.appendChild(thead);
 
         var tbody = el('tbody'), kolumn = ile + (dodaj ? 1 : 0);
-        var lista = widoczneWiersze(), roznic = 0;
+        var lista = widoczneWiersze(), roznic = 0, najlepszych = 0;
         // grupa bez widocznych wierszy (np. same puste cechy) – bez nagłówka
         lista = lista.filter(function (w, i) {
             if (!w.grupa) return true;
@@ -347,8 +412,11 @@
             var lab = el('th', 'pc-lab', nazwa);
             lab.setAttribute('scope', 'row');
             r.appendChild(lab);
-            w.wartosci.forEach(function (v) {
-                var td = el('td', 'pc-kol' + (v.brak ? ' pc-brak' : ''));
+            var naj = ile > 1 ? najlepsze(w) : [];
+            if (naj.length) najlepszych++;
+            w.wartosci.forEach(function (v, i) {
+                var td = el('td', 'pc-kol' + (v.brak ? ' pc-brak' : '') + (naj.indexOf(i) >= 0 ? ' pc-naj' : ''));
+                if (naj.indexOf(i) >= 0) td.title = 'Najkorzystniejsza wartość w porównaniu';
                 if (v.brak) td.textContent = '—';
                 else if (v.html) td.innerHTML = v.html;
                 else td.textContent = v.tekst;
@@ -358,6 +426,8 @@
             tbody.appendChild(r);
         });
         tab.appendChild(tbody);
+        var lNaj = tab.querySelector('.pc-rog__naj');
+        if (lNaj) lNaj.hidden = !najlepszych;
 
         licznik.textContent = 'Porównanie produktów (' + ile + ')';
         podp.textContent = ile > 2 ? 'Przesuń tabelę w bok, żeby zobaczyć pozostałe produkty (' + ile + ') →' : '';
